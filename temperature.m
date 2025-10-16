@@ -75,7 +75,7 @@ D5 = (T5_FINAL - T5_INITIAL) / (A5_FINAL - A5_INITIAL);
 
 % Layer 1 (gradient)
 if altitude_m >= A1_INITIAL && altitude_m < A1_FINAL
-    temperature_K = D1 * altitude_m + T1_INITIAL;
+    temperature_K = D1 * (altitude_m - A1_INITIAL) + T1_INITIAL;
 
 % Layer 2 (pause)
 elseif altitude_m >= A2_INITIAL && altitude_m < A2_FINAL
@@ -83,7 +83,7 @@ elseif altitude_m >= A2_INITIAL && altitude_m < A2_FINAL
 
 % Layer 3 (gradient)
 elseif altitude_m >= A3_INITIAL && altitude_m < A3_FINAL
-    temperature_K = D3 * altitude_m + T3_INITIAL;
+    temperature_K = D3 * (altitude_m - A3_INITIAL) + T3_INITIAL;
 
 % Layer 4 (pause)
 elseif altitude_m >= A4_INITIAL && altitude_m < A4_FINAL
@@ -91,13 +91,13 @@ elseif altitude_m >= A4_INITIAL && altitude_m < A4_FINAL
 
 % Layer 5 (gradient)
 elseif altitude_m >= A5_INITIAL && altitude_m < A5_FINAL
-    temperature_K = D5 * altitude_m + T5_INITIAL;
+    temperature_K = D5 * (altitude_m - A5_INITIAL) + T5_INITIAL;
 
 % Layer 6 (pause)
 elseif altitude_m >= A6_INITIAL && altitude_m < A6_FINAL
     temperature_K = T6_INITIAL;
 
-% Layer 7 (gradient)
+% Layer 7 (gradient, ellipse)
 elseif altitude_m >= A7_INITIAL && altitude_m <= A7_FINAL % end of graph
     temperature_K = T_C + C1 * (1 - ((altitude_m - A7_INITIAL) / C2) ^ 2) ^ 0.5;
 
