@@ -1,4 +1,4 @@
-function [temperature_K] = temperature(altitude_m)
+function [temperature_K, t_initial, slope_variable] = temperature(altitude_m)
 
 % *************************************************************************
 % Purdue Orbital, Flight Dynamics, Ascent Modeling
@@ -14,6 +14,11 @@ function [temperature_K] = temperature(altitude_m)
 % meters) and return a temperature (in Kelvin) for altitudes between 0 and 
 % 100 km. Temperature and altitude values and equations are taken from 
 % NASA's 1976 US standard atmosphere. 
+%
+% Output variables: 
+% - temperature_K: calculated temperature
+% - t_initial: Initial temperature for respective layer
+% - slope_variable: 0 is pause, any other value is slope
 % 
 % *************************************************************************
 
@@ -71,35 +76,47 @@ D5 = (T5_FINAL - T5_INITIAL) / (A5_FINAL - A5_INITIAL);
 % 
 % *************************************************************************
 
-% If-elseif statements to determine temperature
-
 % Layer 1 (gradient)
 if altitude_m >= A1_INITIAL && altitude_m < A1_FINAL
-    temperature_K = D1 * altitude_m + T1_INITIAL;
+    temperature_K = D1 * (altitude_m - A1_INITIAL) + T1_INITIAL;
+    t_initial = T1_INITIAL;
+    slope_variable = D1;
 
 % Layer 2 (pause)
 elseif altitude_m >= A2_INITIAL && altitude_m < A2_FINAL
     temperature_K = T2_INITIAL;
+    t_initial = T2_INITIAL;
+    slope_variable = 0;
 
 % Layer 3 (gradient)
 elseif altitude_m >= A3_INITIAL && altitude_m < A3_FINAL
-    temperature_K = D3 * altitude_m + T3_INITIAL;
+    temperature_K = D3 * (altitude_m - A3_INITIAL) + T3_INITIAL;
+    t_initial = T3_INITIAL;
+    slope_variable = D3;
 
 % Layer 4 (pause)
 elseif altitude_m >= A4_INITIAL && altitude_m < A4_FINAL
     temperature_K = T4_INITIAL;
+    t_initial = T4_INITIAL;
+    slope_variable = 0;
 
 % Layer 5 (gradient)
 elseif altitude_m >= A5_INITIAL && altitude_m < A5_FINAL
-    temperature_K = D5 * altitude_m + T5_INITIAL;
+    temperature_K = D5 * (altitude_m - A5_INITIAL) + T5_INITIAL;
+    t_initial = T5_INITIAL;
+    slope_variable = D5;
 
 % Layer 6 (pause)
 elseif altitude_m >= A6_INITIAL && altitude_m < A6_FINAL
     temperature_K = T6_INITIAL;
+    t_initial = T6_INITIAL;
+    slope_variable = 0;
 
-% Layer 7 (gradient)
+% Layer 7 (gradient, ellipse)
 elseif altitude_m >= A7_INITIAL && altitude_m <= A7_FINAL % end of graph
     temperature_K = T_C + C1 * (1 - ((altitude_m - A7_INITIAL) / C2) ^ 2) ^ 0.5;
+    t_initial = T7_INITIAL;
+    slope_variable = 0;
 
 % All altitudes not within the range 
 else
@@ -109,4 +126,3 @@ else
 end
 
 % Got stuck, NASA and Anderson do not agree, will go with NASA
-% 91-100 km use ellipse equation
