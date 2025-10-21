@@ -42,7 +42,7 @@ T3a_INITIAL = T2_FINAL; % start of gradient
 T3a_FINAL = 228.756; % midpoint of gradient 
 T3b_INITIAL = T3a_FINAL; % midpoint of gradient
 T3b_FINAL = 270.650; % end of gradient
-T4_INITIAL = T3_FINAL; % start of pause
+T4_INITIAL = T3b_FINAL; % start of pause
 T4_FINAL = T4_INITIAL; % end of pause
 T5a_INITIAL = T4_FINAL; % start of gradient
 T5a_FINAL = 270.409; % midpoint 1 of gradient
@@ -64,7 +64,7 @@ A3a_INITIAL = A2_FINAL; % start of gradient
 A3a_FINAL = 32200; % midpoint of gradient
 A3b_INITIAL = A3a_FINAL; % midpoint of gradient
 A3b_FINAL = 47400; % end of gradient
-A4_INITIAL = A3_FINAL; % start of pause
+A4_INITIAL = A3b_FINAL; % start of pause
 A4_FINAL = 51000; % end of pause
 A5a_INITIAL = A4_FINAL; % start of gradient
 A5a_FINAL = 51500; % midpoint 1 of gradient
@@ -121,11 +121,23 @@ elseif altitude_m >= A4_INITIAL && altitude_m < A4_FINAL
     t_initial = T4_INITIAL;
     slope_variable = 0;
 
-% Layer 5 (gradient)
-elseif altitude_m >= A5_INITIAL && altitude_m < A5_FINAL
-    temperature_K = D5 * (altitude_m - A5_INITIAL) + T5_INITIAL;
-    t_initial = T5_INITIAL;
-    slope_variable = D5;
+% Layer 5a (gradient)
+elseif altitude_m >= A5a_INITIAL && altitude_m < A5a_FINAL
+    temperature_K = D5a * (altitude_m - A5a_INITIAL) + T5a_INITIAL;
+    t_initial = T5a_INITIAL;
+    slope_variable = D5a;
+
+% Layer 5b (gradient)
+elseif altitude_m >= A5b_INITIAL && altitude_m < A5b_FINAL
+    temperature_K = D5b * (altitude_m - A5b_INITIAL) + T5b_INITIAL;
+    t_initial = T5b_INITIAL;
+    slope_variable = D5b;
+
+% Layer 5c (gradient)
+elseif altitude_m >= A5c_INITIAL && altitude_m < A5c_FINAL
+    temperature_K = D5c * (altitude_m - A5c_INITIAL) + T5c_INITIAL;
+    t_initial = T5c_INITIAL;
+    slope_variable = D5c;
 
 % Layer 6 (pause)
 elseif altitude_m >= A6_INITIAL && altitude_m < A6_FINAL
