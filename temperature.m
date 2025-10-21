@@ -8,7 +8,7 @@ function [temperature_K, t_initial, slope_variable] = temperature(altitude_m)
 %
 % Contributors: Eric, Cayden, Garion
 % Date Started: 10/8/2025
-% Last Updated: 10/9/2025
+% Last Updated: 10/20/2025
 %
 % Function Description: This function will accept an input altitude (in 
 % meters) and return a temperature (in Kelvin) for altitudes between 0 and 
@@ -28,10 +28,10 @@ function [temperature_K, t_initial, slope_variable] = temperature(altitude_m)
 % 
 % *************************************************************************
 
+% T7 constants (elliptical)
 T_C = 263.1905; % in Kelvin, from NASA
 C1 = -76.3232; % in Kelvin, from NASA
 C2 = 19.9429; % in km, from NASA
-
 
 % Temperature divides
 T1_INITIAL = 288.150; % start of gradient
@@ -105,7 +105,7 @@ elseif altitude_m >= A2_INITIAL && altitude_m < A2_FINAL
 
 % Layer 3a (gradient)
 elseif altitude_m >= A3a_INITIAL && altitude_m < A3a_FINAL
-    temperature_K = D3a * (altitude_m - A3_INITIAL) + T3_INITIAL;
+    temperature_K = D3a * (altitude_m - A3a_INITIAL) + T3a_INITIAL;
     t_initial = T3a_INITIAL;
     slope_variable = D3a;
 
@@ -155,7 +155,4 @@ elseif altitude_m >= A7_INITIAL && altitude_m <= A7_FINAL % end of graph
 else
     fprintf(['* * * * * ERROR * * * * *\n\nAltitude out of acceptable ' ...
         'range\nTemperature not calculated\n']);
-
 end
-
-% Got stuck, NASA and Anderson do not agree, will go with NASA
