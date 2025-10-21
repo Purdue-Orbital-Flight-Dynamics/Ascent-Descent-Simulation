@@ -5,7 +5,7 @@ TODO add detailed description of what the file does here
 Contributors:
 
 %}
-function density_gas = densityGas(volume, density_air, gravity, external_pressure, temperature)
+function density_gas = densityGas(external_pressure, temperature)
     % volume in m^3
     % fluidDensity in kg/m^3
     % gravity in m/s^2
