@@ -1,3 +1,2 @@
-function H = Z2H(Z)
-    r0 = 6356766;
-    H = Z*r0/(r0+Z);
+function H = Z2H(Z) %
+    H = Z*6356766/(6356766+Z);
