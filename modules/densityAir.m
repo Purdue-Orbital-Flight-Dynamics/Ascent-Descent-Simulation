@@ -24,10 +24,10 @@
 % 
 % *************************************************************************
 
-function density = density(pressure, molWeight, temp)
+function densityAir = densityAir(pressure, molWeight, temp)
 
 gas_const = 8.31432e3;
 
-density = pressure * molWeight / gas_const / temp;
+densityAir = pressure * molWeight / gas_const / temp;
 
 end
