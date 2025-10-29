@@ -9,7 +9,7 @@ Function: This calculates the bouyant force acting on the balloon. Pulls in
 Contributors: Aanand Shah
 
 %}
-function F_buoyant = buoyantForce( external_pressure, temperature, pressure, molWeight, temp, altitude)
+function F_buoyant = buoyantForce(external_pressure, temperature, pressure, molWeight, temp, altitude)
     % volume in m^3
     % fluidDensity in kg/m^3
     % gravity in m/s^2
