@@ -9,19 +9,24 @@ Created:
 10/15/2025
 
 Updated:
-10/15/2025
+10/29/2025
 
-INPUTS: Current air density in kilograms / meters ^ 3, cross sectional area of ballon in meters ^ 2, velocity in meters / second ^ 2
+Description:
+    Calculates drag force on balloon using the standard drag coefficient of a sphere
 
-OUTPUTS: Drag force
+INPUTS: 
+-   Current surrounding air density [kg/m^3]
+-   Coss sectional area of ballon   [m^2]
+-   Velocity                        [m/s^2]
+
+OUTPUTS: 
+- Drag force                        [N]
 
 Sources:
 https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/drag-of-a-sphere/
 https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/drag-coefficient/ 
 
 %}
-
-
 
 function f_d = calc_drag_force(air_density, cross_sec_area, velocity)
     
