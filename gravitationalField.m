@@ -6,22 +6,12 @@ Takes altitude in meters and calculates acceleration due to gravity at given alt
 Contributors:
 Jack Triglianos
 
-Created:
-10/15/2025
-
-Updated:
-10/15/2025
-
-INPUTS: Altitude in meters
-
-OUTPUTS: Gravity at an altitude in meters / second ^ 2
-
 Source:
 https://www.vcalc.com/wiki/gravity-acceleration-by-altitude
 
 %}
 
-function g_alt = gravitational_field(altitude)
+function g_alt = gravitationalField(altitude) % altitude in m
 
     format long
     g = 9.80665; % gravity at sea level (m/s^2)

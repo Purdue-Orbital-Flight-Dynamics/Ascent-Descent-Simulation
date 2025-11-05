@@ -24,10 +24,10 @@
 % 
 % *************************************************************************
 
-function densityAir = densityAir(pressure, molWeight, temp)
+function densityAir = densityAir(pressure, temp)
+molecularWeight = molecularWeightAir();
+gas_const = 8.31432e3; % N * m / (kmol * k)
 
-gas_const = 8.31432e3;
-
-densityAir = pressure * molWeight / gas_const / temp;
+densityAir = (pressure * molecularWeight) / (gas_const * temp); % in kg/m^3
 
 end
