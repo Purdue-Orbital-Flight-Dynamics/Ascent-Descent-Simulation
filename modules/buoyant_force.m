@@ -10,7 +10,7 @@ Contributors: Aanand Shah, Jack
 
 %}
 
-function F_buoyant = buoyant_force(altitude)
+function F_buoyant = buoyant_force(altitude, helium_mass)
 
     temp_data = temperature(altitude);
     temp = temp_data(1);
@@ -19,11 +19,11 @@ function F_buoyant = buoyant_force(altitude)
     pressure = external_pressure(altitude, temp, temp_inital, slope);
     mol_weight = molecular_weight_air();
 
-    density_b = density_balloon(pressure, temperature);  % [kg/m^3] 
-    density_a = density_air(pressure, mol_weight, temp);           % [kg/m^3]
+    density_b = density_balloon(pressure, temperature);           % [kg/m^3] 
+    density_a = density_air(pressure, mol_weight, temp);          % [kg/m^3]
 
     g = gravitational_acceleration(altitude);                     % [m/s^2]
-    vol =  volume();                                              % [m^3]
+    vol = volume(altitude, helium_mass);                          % [m^3]
 
     % Calculate the buoyant force using Archimedes' principle
     F_buoyant = (density_a - density_b) * vol * g;                % [N]

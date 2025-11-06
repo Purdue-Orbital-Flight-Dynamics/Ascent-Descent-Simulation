@@ -7,9 +7,7 @@ which is pulled from system mass.
 Contributors: Aanand Shah
 
 %}
-function vol = volume(altitude)
-
-    mass = helium_mass();                                        % [kg]
+function vol = volume(altitude, helium_mass)                                       % [kg]
 
     temp_data = temperature(altitude);
     temp = temp_data(1);
@@ -19,5 +17,5 @@ function vol = volume(altitude)
 
     density_b = density_balloon(pressure, temp); % [kg/m^3]
 
-    vol = mass / density_b;                                      % [m^3]
+    vol = helium_mass / density_b;                                      % [m^3]
 end
