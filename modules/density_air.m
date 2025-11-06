@@ -4,7 +4,7 @@
 % Function Name: density
 % File Name: density.m
 %
-% Contributors: Cayden
+% Contributors: Cayden, Jack
 % Date Started: 10/20/2025
 % Last Updated: 10/20/2025
 %
@@ -24,17 +24,16 @@
 % 
 % *************************************************************************
 
-<<<<<<< HEAD:modules/densityAir.m
-function densityAir = densityAir(pressure, temp)
-    molecularWeight = molecularWeightAir();
-    gas_const = 8.31432e3; % N * m / (kmol * k)
-=======
-function air_density = density_air(pressure, temp)
-molecular_weight = molecular_weight_air();
-gas_const = 8.31432e3;                                            % [N * m / (kmol * k)]
+function air_density = density_air(altitude)
+    
+    gas_const = 8.31432e3;                                            % [N * m / (kmol * k)]
+    molecular_weight = molecular_weight_air();
 
-air_density = (pressure * molecular_weight) / (gas_const * temp); % [kg/m^3]
->>>>>>> 8f00067dcd6f36c8a07522b1733ff699313b6b54:modules/density_air.m
+    temp_data = temperature(altitude);
+    temp = temp_data(1);
+    temp_initial = temp_data(2);
+    slope = temp_data(3);
 
-    densityAir = (pressure * molecularWeight) / (gas_const * temp); % in kg/m^3
-end
+    pressure = external_pressure(altitude, temp, temp_initial, slope);
+
+    air_density = (pressure * molecular_weight) / (gas_const * temp); % [kg/m^3]

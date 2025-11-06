@@ -7,7 +7,7 @@
 
 % inputs: pressure external, temperature external, mass
 
-function Area = cross_sectional_area(T,P,mass)
+function area = cross_sectional_area(T,P,mass)
 
     n = mass/.00400261; %.004 is the molar mass of helium, mass is in kg
 
@@ -17,6 +17,6 @@ function Area = cross_sectional_area(T,P,mass)
 
     radius = (3*V/(4*pi))^(1/3);
 
-    Area = pi*radius^2;
+    area = pi*radius^2;
 
 end

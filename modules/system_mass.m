@@ -8,7 +8,7 @@ Samuel Landers
 
 %}
 
-function mass = system_mass()
+function mass = system_mass(helium_mass)
 
     % Launch Structure masses
     launch_structure_mass = 10;
