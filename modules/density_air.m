@@ -4,7 +4,7 @@
 % Function Name: density
 % File Name: density.m
 %
-% Contributors: Cayden
+% Contributors: Cayden, Jack
 % Date Started: 10/20/2025
 % Last Updated: 10/20/2025
 %
@@ -33,7 +33,7 @@ function air_density = density_air(altitude)
     temp = temp_data(1);
     temp_initial = temp_data(2);
     slope = temp_data(3);
-    
+
     pressure = external_pressure(altitude, temp, temp_initial, slope);
 
     air_density = (pressure * molecular_weight) / (gas_const * temp); % [kg/m^3]

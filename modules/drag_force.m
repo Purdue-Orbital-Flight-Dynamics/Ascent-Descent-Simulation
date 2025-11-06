@@ -29,7 +29,7 @@ https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/drag-coefficient/
 
 %}
 
-function f_d = calc_drag_force(velocity)
+function f_d = drag_force(velocity)
     
     % Can change in future if necessary
     % Should be around 0.07 - 0.5
