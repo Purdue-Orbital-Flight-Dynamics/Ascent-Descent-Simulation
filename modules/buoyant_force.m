@@ -10,10 +10,17 @@ Contributors: Aanand Shah
 
 %}
 
-function F_buoyant = buoyant_force(external_pressure, temperature, pressure, molWeight, temp, altitude)
+function F_buoyant = buoyant_force(altitude)
 
-    density_b = density_balloon(external_pressure, temperature);  % [kg/m^3] 
-    density_a = density_air(pressure, molWeight, temp);           % [kg/m^3]
+    temp_data = temperature(altitude);
+    temp = temp_data(1);
+    temp_inital = temp_data(2);
+    slope = temp_data(3);
+    pressure = external_pressure(altitude, temp, temp_inital, slope);
+    mol_weight = molecular_weight_air();
+
+    density_b = density_balloon(pressure, temperature);  % [kg/m^3] 
+    density_a = density_air(pressure, mol_weight, temp);           % [kg/m^3]
 
     g = gravitational_acceleration(altitude);                     % [m/s^2]
     vol =  volume();                                              % [m^3]
