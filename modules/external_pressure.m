@@ -1,4 +1,4 @@
-function pressure = externalPressure(altitude, T_calculated, T_initial, Lmb)
+function pressure = external_pressure(altitude, T_calculated, T_initial, Lmb)
 % alt in geopot
 
 
