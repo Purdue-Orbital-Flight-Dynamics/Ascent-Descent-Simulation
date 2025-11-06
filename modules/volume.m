@@ -7,9 +7,10 @@ which is pulled from system mass.
 Contributors: Aanand Shah
 
 %}
-function volume = volume()
-    mass = system_mass(); % in kg placeholder for now
-    densityB = densityBalloon(external_pressure, temperature); % in kg/m^3 placeholder for now
+function vol = volume()
 
-    volume = mass / densityB; % in m^3
+    mass = system_mass();                                        % [kg]
+    density_b = density_balloon(external_pressure, temperature); % [kg/m^3]
+
+    vol = mass / density_b;                                      % [m^3]
 end
