@@ -1,4 +1,4 @@
-function weight = molecularWeightAir()
+function weight = molecular_weight_air()
 
 
 n2 = [28.0134, .78084];
