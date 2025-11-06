@@ -6,7 +6,7 @@ Function: This calculates the bouyant force acting on the balloon. Pulls in
  density of the balloon from densityBalloon module, density of air is pulled from densityAir module, 
  universal gas constant and molar mass of helium are defined here.
 
-Contributors: Aanand Shah
+Contributors: Aanand Shah, Jack
 
 %}
 
