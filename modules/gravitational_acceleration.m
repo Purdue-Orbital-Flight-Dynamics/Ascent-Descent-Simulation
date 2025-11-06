@@ -21,13 +21,12 @@ https://www.vcalc.com/wiki/gravity-acceleration-by-altitude
 
 %}
 
-function g_alt = gravitational_acceleration(altitude)
+function g = gravitational_acceleration(altitude)
 
     % Gravity at sea level 
-    g = 9.80665;                        % [m/s^2]
+    g_sea_level = 9.80665;                        % [m/s^2]
     % Mean radius of Earth 
     r = 6371009;                    % [m]
 
-    g_alt = g * (r / (r + altitude))^2; % [m/s^2]
-
+    g = g_sea_level * (r / (r + altitude))^2; % [m/s^2]
 end
