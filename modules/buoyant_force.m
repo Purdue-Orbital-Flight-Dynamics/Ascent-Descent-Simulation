@@ -14,8 +14,9 @@ function F_buoyant = buoyant_force(external_pressure, temperature, pressure, mol
 
     density_b = density_balloon(external_pressure, temperature);  % [kg/m^3] 
     density_a = density_air(pressure, molWeight, temp);           % [kg/m^3]
+
     g = gravitational_acceleration(altitude);                     % [m/s^2]
-    vol =  volume();                                              % [m^3]   placeholder for now?
+    vol =  volume();                                              % [m^3]
 
     % Calculate the buoyant force using Archimedes' principle
     F_buoyant = (density_a - density_b) * vol * g;                % [N]
