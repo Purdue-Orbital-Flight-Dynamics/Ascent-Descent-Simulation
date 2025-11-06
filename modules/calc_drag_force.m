@@ -29,10 +29,13 @@ https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/drag-coefficient/
 
 %}
 
-function f_d = calc_drag_force(cross_sec_area, velocity)
+function f_d = calc_drag_force(velocity)
     
     % Can change in future if necessary
     % Should be around 0.07 - 0.5
     DRAG_COEFFICIENT = 0.47; % Drag coefficient for a sphere (approximate for balloon)
 
-    f_d = 0.5 * DRAG_COEFFICIENT * densityAir() * cross_sec_area * velocity;
+    air_density = density_air();
+    cross_sec_area = cross_sectional_area();
+
+    f_d = 0.5 * DRAG_COEFFICIENT * air_density * cross_sec_area * velocity;
