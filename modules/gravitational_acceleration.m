@@ -1,32 +1,14 @@
+function g = gravitational_acceleration(altitude)
 %{
+Calculates the acceleration due to gravity at a given altitude.
 
-Description:
-Takes altitude in meters and calculates acceleration due to gravity at given altitude.
-
-Contributors:
-Jack Triglianos
-
-Created:
-10/15/2025
-
-Updated:
-10/15/2025
-
-INPUTS: Altitude in meters
-
-OUTPUTS: Gravity at an altitude in meters / second ^ 2
-
-Source:
 https://www.vcalc.com/wiki/gravity-acceleration-by-altitude
 
+Jack Triglianos
+Samuel Landers
 %}
 
-function g = gravitational_acceleration(altitude)
-
-    % Gravity at sea level 
-    g_sea_level = 9.80665;                        % [m/s^2]
-    % Mean radius of Earth 
-    r = 6371009;                    % [m]
-
-    g = g_sea_level * (r / (r + altitude))^2; % [m/s^2]
+G_0 = 9.80665; % [m/s^2] gravity at sea level
+R_AVG = 6371009; % [m] avg. radius of the earth
+g = G_0 * (R_AVG / (R_AVG + altitude))^2; % [m/s^2]
 end

@@ -1,31 +1,28 @@
-
+function F_buoyant = buoyant_force(altitude, helium_mass)
 %{
+Calculates the density of helium within the balloon.
 
-TODO add detailed description of what the file does here
-Function: This calculates the bouyant force acting on the balloon. Pulls in
- density of the balloon from densityBalloon module, density of air is pulled from densityAir module, 
- universal gas constant and molar mass of helium are defined here.
-
-Contributors: Aanand Shah, Jack
-
+Aanand Shah
+Jack Triglianos
 %}
 
-function F_buoyant = buoyant_force(altitude, helium_mass)
+% (1) calculate temperature and pressure
+temp_data = temperature(altitude);
+temp = temp_data(1);
+temp_inital = temp_data(2);
+slope = temp_data(3);
+pressure = external_pressure(altitude, temp, temp_inital, slope);
 
-    temp_data = temperature(altitude);
-    temp = temp_data(1);
-    temp_inital = temp_data(2);
-    slope = temp_data(3);
-    pressure = external_pressure(altitude, temp, temp_inital, slope);
-    mol_weight = molecular_weight_air();
+% (2) calculate density of the air and of the balloon
+density_b = density_balloon(pressure, temperature);
+density_a = density_air(altitude);
 
-    density_b = density_balloon(pressure, temperature);           % [kg/m^3] 
-    density_a = density_air(pressure, mol_weight, temp);          % [kg/m^3]
+% (3) calculate the gravitational acceleration
+g = gravitational_acceleration(altitude);
 
-    g = gravitational_acceleration(altitude);                     % [m/s^2]
-    vol = volume(altitude, helium_mass);                          % [m^3]
+% (4) calculate the volume of the balloon
+vol = volume(altitude, helium_mass);
 
-    % Calculate the buoyant force using Archimedes' principle
-    F_buoyant = (density_a - density_b) * vol * g;                % [N]
-
+% (5) Calculate the buoyant force using Archimedes' principle
+F_buoyant = (density_a - density_b) * vol * g;
 end

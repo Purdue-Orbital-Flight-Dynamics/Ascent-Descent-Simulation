@@ -1,22 +1,31 @@
-%crosssectionalArea 
-%Authors: Garion
+function area = cross_sectional_area(altitude, helium_mass)
+%{
+Calculates the cross sectional area of the balloon.
+Assumes the balloon is a perfect sphere.
+Assumes ideal gas law applies.
+Assumes external and internal pressures are equivalent.
+Assumes external and internal temperatures are equivalent.
 
-% This function assumes that the balloon is a perfect sphere, and that
-% ideal gas laws apply, and that external temperature is equal to internal
-% balloon temperature, and that the pressure external = pressure internal
+Garion Cheng
+Samuel Landers
+%}
 
-% inputs: pressure external, temperature external, mass
+% (1) calculate temperature and pressure
+temp_data = temperature(altitude);
+t = temp_data(1);
+temp_inital = temp_data(2);
+slope = temp_data(3);
+p = external_pressure(altitude, T, temp_inital, slope);
 
-function area = cross_sectional_area(T,P,mass)
+% (2) calculate mols of helium
+HELIUM_MOLAR_MASS = 0.00400261;
+n = helium_mass / HELIUM_MOLAR_MASS;
 
-    n = mass/.00400261; %.004 is the molar mass of helium, mass is in kg
+% (3) utilize ideal gas law to calculate volume of gas
+R = 8.314; %J/(mol*k)
+v = n*R*t/p;
 
-    R = 8.314; %J/(mol*k)
-
-    V = n*R*T/P; %Ideal gas law
-
-    radius = (3*V/(4*pi))^(1/3);
-
-    area = pi*radius^2;
-
+% (4) use volume to calculate cross setional area of the sphere
+radius = (3 * v / (4 * pi))^(1 / 3);
+area = pi * (radius^2);
 end
