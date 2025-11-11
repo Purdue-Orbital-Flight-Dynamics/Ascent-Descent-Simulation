@@ -1,41 +1,23 @@
+function f_d = drag_force(velocity, helium_mass, altitude)
 %{
+Calculates drag force on balloon using the standard drag coefficient of a sphere.
+Assumes the balloon to be a perfect sphere.
+Assumes a drag coefficient of 0.47, when the true value can range from 0.07 to 0.5.
 
-TODO: Estimate drag coefficient, potentially require Reynolds number as an argument to calculate drag coefficient
-
-Contributors:
-Jack Triglianos
-Sam Landers
-
-Created:
-10/15/2025
-
-Updated:
-10/29/2025
-
-Description:
-    Calculates drag force on balloon using the standard drag coefficient of a sphere
-
-INPUTS: 
--   Current surrounding air density [kg/m^3]
--   Coss sectional area of ballon   [m^2]
--   Velocity                        [m/s^2]
-
-OUTPUTS: 
-- Drag force                        [N]
-
-Sources:
 https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/drag-of-a-sphere/
-https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/drag-coefficient/ 
+https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/drag-coefficient/
 
+Jack Triglianos
+Samuel Landers
 %}
 
-function f_d = drag_force(velocity)
-    
-    % Can change in future if necessary
-    % Should be around 0.07 - 0.5
-    DRAG_COEFFICIENT = 0.47; % Drag coefficient for a sphere (approximate for balloon)
+% (1) get the air density
+air_density = density_air(altitude);
 
-    air_density = density_air();
-    cross_sec_area = cross_sectional_area();
+% (2) get the cross sectional area of the balloon
+cross_sec_area = cross_sectional_area(altitude, helium_mass);
 
-    f_d = 0.5 * DRAG_COEFFICIENT * air_density * cross_sec_area * velocity;
+% (3) calculate drag force
+DRAG_COEFFICIENT = 0.47;
+f_d = 0.5 * DRAG_COEFFICIENT * air_density * cross_sec_area * velocity;
+end

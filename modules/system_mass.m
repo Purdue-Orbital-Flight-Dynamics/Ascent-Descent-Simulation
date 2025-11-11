@@ -1,26 +1,24 @@
+function [sys_mass, required_helium_mass] = system_mass(initial_altitude, buoyancy_force)
 %{
+Returns the mass of the entire system.
 
-Place to hard-code all the mass measurements so it's not necesary to recalculate weight everytime.
-All mass measurements are in terms of grams.
-
-Contributors:
-Samuel Landers
-
+Sam Landers
 %}
 
-function mass = system_mass(helium_mass)
+% (1) calculate launch strucutre mass
+launch_structure_mass = 10;
 
-    % Launch Structure masses
-    launch_structure_mass = 10;
+% (2) calculate flight operations mass
+flight_operations_mass = 10;
+required_helium_mass = helium_mass(initial_altitude, buoyancy_force);
+flight_operations_mass = flight_operations_mass + helium_mass;
 
-    % Flight operations masses
-    flight_operations_mass = 10;
+% (3) calculate avionics mass
+avionics_mass = 10;
 
-    % Avionics masses
-    avionics_mass = 10;
+% (4) account for any other mass on the system
+misc_mass = 0;
 
-    % Non-team associated masses
-    misc_mass = 10;
-
-    mass = launch_structure_mass + flight_operations_mass + avionics_mass + misc_mass;
+% (5) sum masses to attain system mass
+sys_mass = launch_structure_mass + flight_operations_mass + avionics_mass + misc_mass;
 end
