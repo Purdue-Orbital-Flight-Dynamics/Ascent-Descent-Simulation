@@ -1,9 +1,38 @@
 function pressure = external_pressure(altitude, T_calculated, T_initial, Lmb)
-% alt in geopot
 
-
-%pressurefunctionforOrbital 
-%Authors: Garion, Liam
+% *************************************************************************
+% Purdue Orbital, Flight Dynamics, Ascent Modeling
+% 
+% Function Name: external_pressure
+% File Name: external_pressure.m
+%
+% Contributors: Garion, Liam
+% Date Started: 10/?/2025
+% Last Updated: 11/10/2025
+%
+% Function Description: This function will accept an input altitude (in 
+% geopotential meters) and return a pressure (in Pascals) for altitudes 
+% between 0 and 100000 geometric meters. Pressure and altitude values 
+% and equations are taken from NASA's 1976 US standard atmosphere. 
+%
+% Source: 
+% 
+% United States. National Oceanic and Atmospheric Administration. (1976). 
+% U.S. Standard Atmosphere, 1976: NOAA-S/T 76-1562. U.S. Government
+% Printing Office. Retrieved from https://www.ngdc.noaa.gov/stp/space-weat
+% her/online-publications/miscellaneous/us-standard-atmosphere-1976/us-stan
+% dard-atmosphere_st76-1562_noaa.pdf
+%
+% Input variables:
+% - altitude: alitutude in geometric meters
+% - T_calculated: calculated temperature at above altitude
+% - T_initial: initial temperature the atmospheric layer
+% - Lmb: lapse rate
+% 
+% Output variables: 
+% - pressure: calculated pressure
+%
+% *************************************************************************
 
 
 R = 287;   
