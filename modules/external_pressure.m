@@ -1,5 +1,11 @@
 function pressure = external_pressure(altitude, T_calculated, T_initial, Lmb)
-<<<<<<< HEAD
+%{
+Calculates the environmental pressure based on temperature data.
+
+Garion Cheng
+Liam Shepard
+Samuel Landers
+%}
 
 % *************************************************************************
 % Purdue Orbital, Flight Dynamics, Ascent Modeling
@@ -34,18 +40,9 @@ function pressure = external_pressure(altitude, T_calculated, T_initial, Lmb)
 % - pressure: calculated pressure
 %
 % *************************************************************************
-=======
-%{
-Calculates the environmental pressure based on temperature data.
-
-Garion Cheng
-Liam Shepard
-Samuel Landers
-%}
 
 R = 287;
 G_0 = 9.80665;
->>>>>>> d7cc8e004ef7ac3d8cbb8f9197f1ecf03be6a493
 
 if altitude < 11100 % first gradient
     pressure_initial = 1.01325*10^3; % mBar
