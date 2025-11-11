@@ -1,4 +1,4 @@
-function area = cross_sectional_area(altitude, helium_mass)
+function area = cross_sectional_area_balloon(altitude, helium_mass)
 %{
 Calculates the cross sectional area of the balloon.
 Assumes the balloon is a perfect sphere.
