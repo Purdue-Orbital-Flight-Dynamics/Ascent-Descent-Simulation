@@ -1,7 +1,9 @@
 function [temperature_K, t_initial, slope_variable] = temperature(altitude_Z_m)
 %{
 Calculates the temperature (K) at a given altitude (m).
-<sources here>
+
+https://www.ngdc.noaa.gov/stp/space-weather/online-publications/miscellan
+eous/us-standard-atmosphere-1976/us-standard-atmosphere_st76-1562_noaa.pdf
 
 Eric Umminger
 Cayden Varno
@@ -22,6 +24,17 @@ garion Cheng
 % geometric meters) and return a temperature (in Kelvin) for altitudes 
 % between 0 and 100000 geometric meters. Temperature and altitude values 
 % and equations are taken from NASA's 1976 US standard atmosphere. 
+% 
+% Source: 
+% 
+% United States. National Oceanic and Atmospheric Administration. (1976). 
+% U.S. Standard Atmosphere, 1976: NOAA-S/T 76-1562. U.S. Government
+% Printing Office. Retrieved from https://www.ngdc.noaa.gov/stp/space-weat
+% her/online-publications/miscellaneous/us-standard-atmosphere-1976/us-stan
+% dard-atmosphere_st76-1562_noaa.pdf
+%
+% Input variables:
+% - altitude_Z_m: altitude in geometric meters
 %
 % Output variables: 
 % - temperature_K: calculated temperature
