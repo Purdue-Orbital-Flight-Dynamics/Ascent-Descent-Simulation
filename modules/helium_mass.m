@@ -21,7 +21,7 @@ pressure = external_pressure(initial_altitude, temp, temp_inital, slope);
 mol_weight = molecular_weight_air();
 
 % (3) calculate the density of the air and within the balloon
-density_b = density_balloon(pressure, temp); % in kg/m^3
+density_b = density_balloon(initial_altitude); % in kg/m^3
 density_a = density_air(pressure, mol_weight, temp);
 
 % (4) get the gravitational acceleration
