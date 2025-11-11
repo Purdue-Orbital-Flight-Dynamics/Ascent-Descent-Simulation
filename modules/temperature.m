@@ -108,6 +108,7 @@ D5b = (T5b_FINAL - T5b_INITIAL) / (A5b_FINAL - A5b_INITIAL);
 % *************************************************************************
 
 % Coverting to geopotential altitude
+altitude_H_m = Z2H(altitude_Z_m)
 a7_initial_H = A7_INITIAL*6356766/(6356766+ A7_INITIAL);
 
 % Layer 1 (gradient)
