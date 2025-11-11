@@ -10,7 +10,8 @@ Samuel Landers
 %}
 
 % (1) calculate temperature and pressure
-temp_data = temperature(initial_altitude);
+[temperature_K, t_initial, slope_variable]= temperature(initial_altitude);
+temp_data = [temperature_K, t_initial, slope_variable];
 temp = temp_data(1);
 temp_inital = temp_data(2);
 slope = temp_data(3);
