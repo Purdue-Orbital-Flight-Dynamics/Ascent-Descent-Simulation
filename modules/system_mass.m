@@ -1,6 +1,6 @@
 function [sys_mass, required_helium_mass] = system_mass(initial_altitude, buoyancy_force)
 %{
-Returns the mass of the entire system.
+%Returns the mass of the entire system in kilograms.
 
 Sam Landers
 %}
