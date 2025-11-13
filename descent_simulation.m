@@ -42,7 +42,7 @@ while (position > ground_level)
     end
 
     % --- Forces
-    drag_force = (); % Drag force for descent to be implemented
+    drag_force = dragForceDescent(); % Drag force for descent to be implemented
     gravitational_force = gravitationalForce(position, total_mass);
 
     net_force = drag_force + gravitational_force; 
