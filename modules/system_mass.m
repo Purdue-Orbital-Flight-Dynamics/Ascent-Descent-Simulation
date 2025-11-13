@@ -6,18 +6,18 @@ Sam Landers
 %}
 
 % (1) calculate launch strucutre mass
-launch_structure_mass = 10;
+launch_structure_mass = 2.2;
 
 % (2) calculate flight operations mass
-flight_operations_mass = 10;
+flight_operations_mass = 2.2;
 required_helium_mass = heliumMass(initial_altitude, buoyancy_force);
 flight_operations_mass = flight_operations_mass + required_helium_mass;
 
 % (3) calculate avionics mass
-avionics_mass = 10;
+avionics_mass = 2.2;
 
 % (4) account for any other mass on the system
-misc_mass = 0;
+misc_mass = 2.2;
 
 % (5) sum masses to attain system mass
 sys_mass = launch_structure_mass + flight_operations_mass + avionics_mass + misc_mass;
