@@ -58,11 +58,11 @@ for initial_buoyant_force = buoyant_force_start_index:bouyant_step:buoyant_force
         gravitational_force = gravitationalForce(position, total_mass);
         buoyant_force       = buoyantForce(position, helium_mass);
         
-        net_force           = buoyant_force + drag_force + gravitational_force;
+        net_force           = buoyant_force - drag_force + gravitational_force;
 
         % --- Update state
         acceleration = net_force / total_mass;
-        velocity     = velocity + acceleration * dt;
+        velocity     = velocity + acceleration * dt
         position     = position + velocity * dt;
 
         % --- Update vector logs
