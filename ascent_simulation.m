@@ -14,10 +14,10 @@ startup()
 
 best_buoyancy_force = NaN;
 closest_ascent_rate = Inf;
-buoyant_force_start_index = 10; % [N]
-buoyant_force_end_index = 40; % [N]
+buoyant_force_start_index = 200; % [N]
+buoyant_force_end_index = 600; % [N]
 dt         = 1;      % [s]
-stop_steps = 10000; % [s]
+stop_steps = 1000; % [s]
 bouyant_step = 10;
 
 % --- Inputs
@@ -55,10 +55,13 @@ for initial_buoyant_force = buoyant_force_start_index:bouyant_step:buoyant_force
 
         % --- Forces
         drag_force          = dragForce(velocity, helium_mass, position)
-        gravitational_force = gravitationalForce(position, total_mass);
-        buoyant_force       = buoyantForce(position, helium_mass);
+        gravitational_force = -gravitationalForce(position, total_mass)
+        buoyant_force       = buoyantForce(position, helium_mass)
         
         net_force           = buoyant_force - drag_force + gravitational_force;
+        if net_force < 0
+            break
+        end
 
         % --- Update state
         acceleration = net_force / total_mass;
@@ -78,8 +81,8 @@ for initial_buoyant_force = buoyant_force_start_index:bouyant_step:buoyant_force
         k = k + 1;
         cur_time = cur_time + dt;
     end
-
-    if abs(avg_ascent_rate - target_ascent_rate) < abs(closest_ascent_rate - target_ascent_rate)
+    
+    if abs(avg_ascent_rate) < abs(closest_ascent_rate)
         closest_ascent_rate = avg_ascent_rate;
         best_buoyancy_force = buoyant_force;
     end
