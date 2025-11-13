@@ -14,11 +14,11 @@ slope = temp_data(3);
 pressure = external_pressure(altitude, temp, temp_inital, slope);
 
 % (2) calculate density of the air and of the balloon
-density_b = density_balloon(pressure, temperature);
+density_b = density_balloon(altitude);
 density_a = density_air(altitude);
 
 % (3) calculate the gravitational acceleration
-g = gravitational_acceleration(altitude);
+g = gravitationalAcceleration(altitude);
 
 % (4) calculate the volume of the balloon
 vol = volume(altitude, helium_mass);
