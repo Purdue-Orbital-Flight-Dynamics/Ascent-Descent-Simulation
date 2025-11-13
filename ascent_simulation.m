@@ -81,7 +81,6 @@ for initial_buoyant_force = buoyant_force_start_index:0.0001:buoyant_force_end_i
     if abs(avg_ascent_rate - target_ascent_rate) < abs(closest_ascent_rate - target_ascent_rate)
         closest_ascent_rate = avg_ascent_rate;
         best_buoyancy_force = buoyant_force;
-        disp(closest_ascent_rate)
     end
 end
 
