@@ -7,7 +7,7 @@ Jack Triglianos
 %}
 
 % (1) calculate temperature and pressure
-temp_data = temperature(altitude);
+[temp_data(1), temp_data(2), temp_data(3)] = temperature(altitude);
 temp = temp_data(1);
 temp_inital = temp_data(2);
 slope = temp_data(3);
