@@ -14,21 +14,22 @@ startup()
 
 best_buoyancy_force = NaN;
 closest_ascent_rate = Inf;
-buoyant_force_start_index = 1.9; % [N]
-buoyant_force_end_index = 2.1; % [N]
+buoyant_force_start_index = 10; % [N]
+buoyant_force_end_index = 40; % [N]
 dt         = 1;      % [s]
-stop_steps = 1000; % [s]
+stop_steps = 10000; % [s]
+bouyant_step = 10;
 
 % --- Inputs
 burst_altitude     = input("Enter balloon burst altitude (m)    : ");
 start_altitude     = input("Enter starting altitude (m)         : ");
 target_ascent_rate = input("Enter desired ascent rate (m/s)     : ");
 
-for initial_buoyant_force = buoyant_force_start_index:0.0001:buoyant_force_end_index
+for initial_buoyant_force = buoyant_force_start_index:bouyant_step:buoyant_force_end_index
 
     % --- Initial conditions
     cur_time      = 0;                    % [s]
-    position      = 0;                    % [m]
+    position      = start_altitude;                    % [m]
     velocity      = 0;                    % [m/s]
     acceleration  = 0;                    % [m/s^2]
     total_mass    = system_mass(start_altitude, initial_buoyant_force) % [kg]
@@ -53,7 +54,7 @@ for initial_buoyant_force = buoyant_force_start_index:0.0001:buoyant_force_end_i
         end
 
         % --- Forces
-        drag_force          = dragForce(velocity, helium_mass, position);
+        drag_force          = dragForce(velocity, helium_mass, position)
         gravitational_force = gravitationalForce(position, total_mass);
         buoyant_force       = buoyantForce(position, helium_mass);
         
