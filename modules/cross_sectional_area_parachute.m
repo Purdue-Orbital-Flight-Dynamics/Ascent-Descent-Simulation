@@ -1,4 +1,4 @@
-function area = cross_sectional_area_parachute(altitude, helium_mass)
+function area = cross_sectional_area_parachute()
 %{
 Calculates the cross sectional area of the parachute.
 Assumes the balloon is a perfect sphere.
