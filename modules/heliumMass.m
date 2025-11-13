@@ -25,7 +25,7 @@ density_b = density_balloon(initial_altitude); % in kg/m^3
 density_a = density_air(initial_altitude);
 
 % (4) get the gravitational acceleration
-gravity = gravitational_acceleration(initial_altitude); % in m/s^2
+gravity = gravitationalAcceleration(initial_altitude); % in m/s^2
 
 % (5) calculate volume of the balloon
 volume = initial_buoyancy_f / (density_a - density_b) / gravity;
