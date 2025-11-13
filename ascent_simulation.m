@@ -31,8 +31,8 @@ for initial_buoyant_force = buoyant_force_start_index:0.0001:buoyant_force_end_i
     position      = 0;                    % [m]
     velocity      = 0;                    % [m/s]
     acceleration  = 0;                    % [m/s^2]
-    total_mass    = system_mass(start_altitude, initial_buoyant_force) / 1000; % [kg]
-    helium_mass   = heliumMass(start_altitude, initial_buoyant_force);
+    total_mass    = system_mass(start_altitude, initial_buoyant_force) / 1000 % [kg]
+    helium_mass   = heliumMass(start_altitude, initial_buoyant_force)
 
     % --- Statistics
     avg_ascent_rate = 0; % [m/s]
@@ -72,7 +72,7 @@ for initial_buoyant_force = buoyant_force_start_index:0.0001:buoyant_force_end_i
 
         % --- Update statistics
         avg_ascent_rate = mean(v);
-
+        
         % --- Progress time
         k = k + 1;
         cur_time = cur_time + dt;
@@ -86,7 +86,3 @@ for initial_buoyant_force = buoyant_force_start_index:0.0001:buoyant_force_end_i
 end
 
 disp(best_buoyancy_force + " N buoyancy force results in an avg. velocity of " + closest_ascent_rate + " m/s");
-
-
-
-    

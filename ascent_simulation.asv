@@ -1,3 +1,4 @@
+clear
 %{
 
 Simulation driver and entry point.
@@ -31,7 +32,7 @@ for initial_buoyant_force = buoyant_force_start_index:0.0001:buoyant_force_end_i
     velocity      = 0;                    % [m/s]
     acceleration  = 0;                    % [m/s^2]
     total_mass    = system_mass(start_altitude, initial_buoyant_force) / 1000; % [kg]
-    helium_mass   = helium_mass(start_altitude, initial_buoyant_force);
+    helium_mass   = heliumMass(start_altitude, initial_buoyant_force);
 
     % --- Statistics
     avg_ascent_rate = 0; % [m/s]
@@ -52,9 +53,9 @@ for initial_buoyant_force = buoyant_force_start_index:0.0001:buoyant_force_end_i
         end
 
         % --- Forces
-        drag_force          = cadrag_force(velocity);
+        drag_force          = dragForce(velocity, helium_mass, position);
         gravitational_force = gravitationalForce(position, total_mass);
-        buoyant_force       = buoyant_force(altitude, helium_mass);
+        buoyant_force       = buoyantForce(position, helium_mass);
         
         net_force           = buoyant_force + drag_force + gravitational_force;
 
@@ -71,7 +72,7 @@ for initial_buoyant_force = buoyant_force_start_index:0.0001:buoyant_force_end_i
 
         % --- Update statistics
         avg_ascent_rate = mean(v);
-
+        v_log
         % --- Progress time
         k = k + 1;
         cur_time = cur_time + dt;
