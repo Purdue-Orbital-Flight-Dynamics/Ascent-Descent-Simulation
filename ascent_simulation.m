@@ -52,7 +52,7 @@ for initial_buoyant_force = buoyant_force_start_index:0.0001:buoyant_force_end_i
         end
 
         % --- Forces
-        drag_force          = calc_drag_force(velocity);
+        drag_force          = drag_force(velocity);
         gravitational_force = gravitationalForce(position, total_mass);
         buoyant_force       = buoyant_force(altitude, helium_mass);
         
