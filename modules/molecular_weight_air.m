@@ -1,20 +1,21 @@
 function weight = molecular_weight_air()
-%{
-Returns the molecular weight of the air.
-
-Cayden Varno
-%}
-
-n2 = [28.0134, .78084];
-o2 = [31.9988, .209476];
-ar = [39.948, .00934];
-co2 = [44.00995, .00314];
-ne = [20.183, .00001818];
-he = [4.0026, .00000524];
-kr = [83.80, .00000114];
-xe = [181.30, .000000087];
-ch4 = [16.04303, .000002];
-h2 = [2.01594, .0000005];
-gases = [n2; o2; ar; co2; ne; he; kr; xe; ch4; h2];
-weight = sum(gases(:,1) .* gases(:,2));
+% %{
+% Returns the molecular weight of the air.
+% 
+% Cayden Varno
+% %}
+% 
+% n2 = [28.0134, .78084];
+% o2 = [31.9988, .209476];
+% ar = [39.948, .00934];
+% co2 = [44.00995, .00314];
+% ne = [20.183, .00001818];
+% he = [4.0026, .00000524];
+% kr = [83.80, .00000114];
+% xe = [181.30, .000000087];
+% ch4 = [16.04303, .000002];
+% h2 = [2.01594, .0000005];
+% gases = [n2; o2; ar; co2; ne; he; kr; xe; ch4; h2];
+% weight = sum(gases(:,1) .* gases(:,2));
+weight = 28.97; % kg/kmol
 end

@@ -1,4 +1,4 @@
-function pressure = external_pressure(altitude, T_calculated, T_initial, Lmb)
+function pressure2 = external_pressure(altitude, T_calculated, T_initial, Lmb)
 %{
 Calculates the environmental pressure based on temperature data.
 
@@ -57,6 +57,7 @@ elseif altitude < Z2H(51000) % second pause
     pressure_initial = 7.0458 * 10^-1;
     pressure = pressure_initial * e.^-((G_0/R/270.65)*(altitude*1000-11100)); % 270.65is the pause temp
 end
+pressure2 = pressure * 100;
 end
 
 

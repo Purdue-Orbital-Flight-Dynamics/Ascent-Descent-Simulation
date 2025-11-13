@@ -16,7 +16,7 @@ temp_data = [temperature_K, t_initial, slope_variable];
 temp = temp_data(1);
 temp_initial = temp_data(2);
 slope = temp_data(3);
-pressure = external_pressure(altitude, temp, temp_initial, slope);
+pressure = external_pressure(altitude, temp, temp_initial, slope); 
 
 % (3) calculate density of air
 GAS_CONSTANT = 8.31432e3; % [N * m / (kmol * k)]

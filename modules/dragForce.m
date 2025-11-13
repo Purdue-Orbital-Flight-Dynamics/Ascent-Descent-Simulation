@@ -12,7 +12,7 @@ Samuel Landers
 %}
 
 % (1) get the air density
-air_density = density_air(altitude);
+air_density = density_air(altitude) * 100
 
 % (2) get the cross sectional area of the balloon
 cross_sec_area = cross_sectional_area_balloon(altitude, helium_mass);
