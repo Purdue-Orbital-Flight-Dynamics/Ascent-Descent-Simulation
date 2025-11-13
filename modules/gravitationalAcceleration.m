@@ -1,4 +1,4 @@
-function g = gravitational_acceleration(altitude)
+function g = gravitationalAcceleration(altitude)
 %{
 Calculates the acceleration due to gravity at a given altitude.
 
