@@ -10,7 +10,7 @@ launch_structure_mass = 10;
 
 % (2) calculate flight operations mass
 flight_operations_mass = 10;
-required_helium_mass = helium_mass(initial_altitude, buoyancy_force);
+required_helium_mass = heliumMass(initial_altitude, buoyancy_force);
 flight_operations_mass = flight_operations_mass + required_helium_mass;
 
 % (3) calculate avionics mass
