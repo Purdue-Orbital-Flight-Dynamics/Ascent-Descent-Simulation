@@ -31,7 +31,7 @@ for initial_buoyant_force = buoyant_force_start_index:0.0001:buoyant_force_end_i
     position      = 0;                    % [m]
     velocity      = 0;                    % [m/s]
     acceleration  = 0;                    % [m/s^2]
-    total_mass    = system_mass(start_altitude, initial_buoyant_force) / 1000 % [kg]
+    total_mass    = system_mass(start_altitude, initial_buoyant_force) % [kg]
     helium_mass   = heliumMass(start_altitude, initial_buoyant_force)
 
     % --- Statistics

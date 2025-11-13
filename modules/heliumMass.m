@@ -1,4 +1,4 @@
-function mass = helium_mass(initial_altitude, initial_buoyancy_f)
+function mass = heliumMass(initial_altitude, initial_buoyancy_f)
 %{
 Calculates the required mass of helium to attain a certain bouyant
 force at a given altittude.
