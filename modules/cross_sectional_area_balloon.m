@@ -16,7 +16,7 @@ temp_data = [temperature_K, t_initial, slope_variable];
 t = temp_data(1);
 temp_inital = temp_data(2);
 slope = temp_data(3);
-p = external_pressure(altitude, T, temp_inital, slope);
+p = external_pressure(altitude, t, temp_inital, slope);
 
 % (2) calculate mols of helium
 HELIUM_MOLAR_MASS = 0.00400261;

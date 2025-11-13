@@ -1,4 +1,4 @@
-function f_d = drag_force(velocity, helium_mass, altitude)
+function f_d = dragForce(velocity, helium_mass, altitude)
 %{
 Calculates drag force on balloon using the standard drag coefficient of a sphere.
 Assumes the balloon to be a perfect sphere.
