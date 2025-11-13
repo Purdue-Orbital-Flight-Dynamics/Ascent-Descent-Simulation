@@ -34,7 +34,36 @@ a  = acceleration;
 k = 2;
 
 % --- Run simulation step loop
-while () {
+while (position > ground_level) 
 
-}
+        % --- Exit if taking too long
+    if (k >= stop_steps)
+        break;
+    end
+
+    % --- Forces
+    drag_force = (); % Drag force for descent to be implemented
+    gravitational_force = gravitationalForce(position, total_mass);
+
+    net_force = drag_force + gravitational_force; 
+
+    % --- Update state
+    acceleration = net_force / total_mass;
+    velocity     = velocity + acceleration * dt;
+    position     = position + velocity * dt;   
+
+    % --- Update vector logs
+    t(k) = cur_time;
+    x(k) = position;
+    v(k) = velocity;
+    a(k) = acceleration;
+  
+    % --- Update statistics
+    avg_ascent_rate = mean(v);
+
+    % --- Progress time
+    k = k + 1;
+    cur_time = cur_time + dt;
+end
+disp("Average descent rate: " + avg_descent_rate + " m/s");
 
