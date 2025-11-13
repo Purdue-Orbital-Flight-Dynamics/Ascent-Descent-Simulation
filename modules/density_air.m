@@ -11,7 +11,8 @@ Samuel Landers
 molecular_weight = molecular_weight_air();
 
 % (2) calculate temperature and pressure
-temp_data = temperature(altitude);
+[temperature_K, t_initial, slope_variable] = temperature(altitude);
+temp_data = [temperature_K, t_initial, slope_variable];
 temp = temp_data(1);
 temp_initial = temp_data(2);
 slope = temp_data(3);

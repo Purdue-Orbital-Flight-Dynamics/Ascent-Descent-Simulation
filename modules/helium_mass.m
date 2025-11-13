@@ -10,7 +10,8 @@ Samuel Landers
 %}
 
 % (1) calculate temperature and pressure
-temp_data = temperature(initial_altitude);
+[temperature_K, t_initial, slope_variable] = temperature(initial_altitude);
+temp_data = [temperature_K, t_initial, slope_variable];
 temp = temp_data(1);
 temp_inital = temp_data(2);
 slope = temp_data(3);
@@ -20,8 +21,8 @@ pressure = external_pressure(initial_altitude, temp, temp_inital, slope);
 mol_weight = molecular_weight_air();
 
 % (3) calculate the density of the air and within the balloon
-density_b = density_balloon(pressure, temp); % in kg/m^3
-density_a = density_air(pressure, mol_weight, temp);
+density_b = density_balloon(initial_altitude); % in kg/m^3
+density_a = density_air(initial_altitude);
 
 % (4) get the gravitational acceleration
 gravity = gravitational_acceleration(initial_altitude); % in m/s^2
