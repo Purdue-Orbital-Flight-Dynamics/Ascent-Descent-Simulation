@@ -22,6 +22,8 @@ cur_time      = 0;                    % [s]
 position      = burst_altitude;       % [m]
 velocity      = burst_velocity;       % [m/s]
 acceleration  = 0;                    % [m/s^2]
+dt         = 1;      % [s]
+stop_steps = 1000; % [s]
 
 % --- Statistics
 avg_descent_rate = 0; % [m/s]
@@ -42,7 +44,7 @@ while (position > ground_level)
     end
 
     % --- Forces
-    drag_force = dragForceDescent(); % Drag force for descent to be implemented
+    drag_force = dragForceDescent(position); % Drag force for descent to be implemented
     gravitational_force = gravitationalForce(position, total_mass);
 
     net_force = drag_force + gravitational_force; 
