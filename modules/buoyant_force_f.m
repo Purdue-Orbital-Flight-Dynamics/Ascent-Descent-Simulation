@@ -1,4 +1,4 @@
-function F_buoyant = buoyant_force_f(altitude, helium_mass)
+function buoyant_force = buoyant_force_f(altitude, helium_mass)
 
 %************************************************************************
 % Purdue Orbital, Flight Dynamics
@@ -28,15 +28,14 @@ function F_buoyant = buoyant_force_f(altitude, helium_mass)
 %
 %************************************************************************
 
-% Compute densities
-density_b = balloon_density_f(altitude); % kg/m^3
-density_a = air_density_f(altitude); % kg/m^3
+% Compute density
+air_density = air_density_f(altitude); % in kg/m^3
 
 % Compute gravitational acceleration
-g = gravitationalAcceleration(altitude); % m/s^2
+gravity_acceleration = gravity_acceleration_f(altitude); % in m/s^2
 
 % Compute balloon volume
-vol = balloon_volume_f(altitude, helium_mass); % m^3
+volume = balloon_volume_f(altitude, helium_mass); % in m^3
 
 % Buoyant force (Archimedes)
-F_buoyant = (density_a - density_b) * vol * g; % N
+buoyant_force = (air_density) * volume * gravity_acceleration; % in N
