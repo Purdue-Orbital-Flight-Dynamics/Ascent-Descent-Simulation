@@ -1,24 +1,37 @@
-function air_density = density_air(altitude)
-%{
-Calculates the density of the air.
+function [density] = air_density_f(altitude)
+%************************************************************************
+% Purdue Orbital, Flight Dynamics
+%
+% Project Name: Ascent/Descent Modeling
+%
+% Function Name: air_density_f
+% File Name: air_density_f.m
+%
+% Contributors: Cayden Varno, Jack Triglianos, Samuel Landers
+% Date Created: 10/??/2025
+% Last Updated: 11/17/2025
+%
+% Function Description:
+%   Computes atmospheric density at a given geometric altitude using the
+%   equation of state for an ideal gas. Temperature and pressure are 
+%   obtained from standard-atmosphere helper functions.
+%
+% References:
+%   
+%
+% Input variables:
+% - altitude: geometric altitude, meters, positive
+%
+% Output variables:
+% - density: air density at the specified altitude, kg/m^3, positive
+%
+%************************************************************************
 
-Cayden Varno
-Jack Triglianos
-Samuel Landers
-%}
+% Constants
+GAS_CONSTANT = 8.31432e3;  % Universal gas constant, N*m/(kmol*K)
 
-% (1) get the molecular weight of the air
-molecular_weight = molecular_weight_air();
+molecular_weight = molecular_weight_air_f(); % kmol/kg
+[temperature, initial_temperature, slope] = temperature_f(altitude);  % K, K, K/m
+pressure = external_pressure(altitude, temperature, initial_temperature, slope); % Pa
 
-% (2) calculate temperature and pressure
-[temperature_K, t_initial, slope_variable] = temperature(altitude);
-temp_data = [temperature_K, t_initial, slope_variable];
-temp = temp_data(1);
-temp_initial = temp_data(2);
-slope = temp_data(3);
-pressure = external_pressure(altitude, temp, temp_initial, slope); 
-
-% (3) calculate density of air
-GAS_CONSTANT = 8.31432e3; % [N * m / (kmol * k)]
-air_density = (pressure * molecular_weight) / (GAS_CONSTANT * temp); % [kg/m^3]
-end
+density = (pressure * molecular_weight) / (GAS_CONSTANT * temperature); % kg/m^3
