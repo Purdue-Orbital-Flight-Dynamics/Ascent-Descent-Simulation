@@ -1,4 +1,4 @@
-function [temperature, t_initial, slope_variable] = temperature_f(altitude_Z)
+function [temperature, initial_temperature, slope_variable] = temperature_f(altitude_Z)
 
 % *************************************************************************
 % Purdue Orbital, Flight Dynamics
@@ -30,7 +30,7 @@ function [temperature, t_initial, slope_variable] = temperature_f(altitude_Z)
 %
 % Output variables: 
 % - temperature: calculated temperature, in Kelvin, positive
-% - t_initial: Initial temperature for respective layer, in Kelvin, positive
+% - initial_temperature: initial temperature for respective layer, in Kelvin, positive
 % - slope_variable: 0 is a pause and any other value is a slope, unitless, any sign
 % 
 % *************************************************************************
@@ -106,55 +106,55 @@ a7_initial_H = A7_INITIAL*6356766/(6356766+ A7_INITIAL);
 % Layer 1 (gradient)
 if altitude_H >= A1_INITIAL && altitude_H < A1_FINAL
     temperature = D1 * (altitude_H - A1_INITIAL) + T1_INITIAL;
-    t_initial = T1_INITIAL;
+    initial_temperature = T1_INITIAL;
     slope_variable = D1;
 
 % Layer 2 (pause)
 elseif altitude_H >= A2_INITIAL && altitude_H < A2_FINAL
     temperature = T2_INITIAL;
-    t_initial = T2_INITIAL;
+    initial_temperature = T2_INITIAL;
     slope_variable = 0;
 
 % Layer 3a (gradient)
 elseif altitude_H >= A3a_INITIAL && altitude_H < A3a_FINAL
     temperature = D3a * (altitude_H - A3a_INITIAL) + T3a_INITIAL;
-    t_initial = T3a_INITIAL;
+    initial_temperature = T3a_INITIAL;
     slope_variable = D3a;
 
 % Layer 3a (gradient)
 elseif altitude_H >= A3b_INITIAL && altitude_H < A3b_FINAL
     temperature = D3b * (altitude_H - A3b_INITIAL) + T3b_INITIAL;
-    t_initial = T3b_INITIAL;
+    initial_temperature = T3b_INITIAL;
     slope_variable = D3b;
 
 % Layer 4 (pause)
 elseif altitude_H >= A4_INITIAL && altitude_H < A4_FINAL
     temperature = T4_INITIAL;
-    t_initial = T4_INITIAL;
+    initial_temperature = T4_INITIAL;
     slope_variable = 0;
 
 % Layer 5a (gradient)
 elseif altitude_H >= A5a_INITIAL && altitude_H < A5a_FINAL
     temperature = D5a * (altitude_H - A5a_INITIAL) + T5a_INITIAL;
-    t_initial = T5a_INITIAL;
+    initial_temperature = T5a_INITIAL;
     slope_variable = D5a;
 
 % Layer 5b (gradient)
 elseif altitude_H >= A5b_INITIAL && altitude_H < A5b_FINAL
     temperature = D5b * (altitude_H - A5b_INITIAL) + T5b_INITIAL;
-    t_initial = T5b_INITIAL;
+    initial_temperature = T5b_INITIAL;
     slope_variable = D5b;
 
 % Layer 6 (pause)
 elseif altitude_H >= A6_INITIAL && altitude_H < A6_FINAL
     temperature = T6_INITIAL;
-    t_initial = T6_INITIAL;
+    initial_temperature = T6_INITIAL;
     slope_variable = 0;
 
 % Layer 7 (gradient, ellipse)
 elseif altitude_H >= A7_INITIAL && altitude_H <= A7_FINAL % end of graph
     temperature = T_C + C1 * (1 - ((altitude_Z - a7_initial_H) / C2) ^ 2) ^ 0.5;
-    t_initial = T7_INITIAL;
+    initial_temperature = T7_INITIAL;
     slope_variable = 0;
 
 % All altitudes not within the range 
