@@ -1,32 +1,48 @@
-function area = cross_sectional_area_balloon(altitude, helium_mass)
-%{
-Calculates the cross sectional area of the balloon.
-Assumes the balloon is a perfect sphere.
-Assumes ideal gas law applies.
-Assumes external and internal pressures are equivalent.
-Assumes external and internal temperatures are equivalent.
+function [area] = balloon_cross_sectional_area_f(altitude, helium_mass)
 
-Garion Cheng
-Samuel Landers
-%}
+%************************************************************************
+% Purdue Orbital, Flight Dynamics
+%
+% Project Name: Ascent/Descent Modeling
+%
+% Function Name: balloon_cross_sectional_area_f
+% File Name: balloon_cross_sectional_area_f.m
+%
+% Contributors: Garion Cheng, Samuel Landers
+% Date Created: 10/??/2025
+% Last Updated: 11/17/2025
+%
+% Function Description:
+%   Computes the cross-sectional area of a high-altitude balloon assuming:
+%   - Balloon is a perfect sphere
+%   - Ideal gas behavior
+%   - Internal pressure equals external pressure
+%   - Internal temperature equals external temperature
+%
+% References:
+%   Purdue Orbital Flight Dynamics Coding Standard
+%
+% Input variables:
+% - altitude: geometric altitude, meters, positive
+% - helium_mass: mass of helium in the balloon, kilograms, positive
+%
+% Output variables:
+% - area: balloon cross-sectional area, m^2, positive
+%
+%************************************************************************
 
-% (1) calculate temperature and pressure
-[temperature_K, t_initial, slope_variable] = temperature(altitude);
-temp_data = [temperature_K, t_initial, slope_variable];
-t = temp_data(1);
-temp_inital = temp_data(2);
-slope = temp_data(3);
-p = external_pressure(altitude, t, temp_inital, slope);
+% Calculate temperature and external pressure at altitude
+[temperature, initial_temperature, lapse_rate] = temperature_f(altitude); % K, K, K/m
+pressure = external_pressure(altitude, temperature, initial_temperature, lapse_rate); % Pa
 
-% (2) calculate mols of helium
+% Calculate amount of helium
 HELIUM_MOLAR_MASS = 4.00261; % kg/kmol
-n = helium_mass / HELIUM_MOLAR_MASS;
+helium_amount = helium_mass / HELIUM_MOLAR_MASS; % kmol
 
-% (3) utilize ideal gas law to calculate volume of gas
-R = 8.314e3; %J/(kmol*k)
-v = n*R*t/p;
+% Ideal gas law for volume
+GAS_CONSTANT = 8.314e3; % J/(kmol·K)
+gas_volume = helium_amount * GAS_CONSTANT * temperature / pressure; % m^3
 
-% (4) use volume to calculate cross setional area of the sphere
-radius = (3 * v / (4 * pi))^(1 / 3);
-area = pi * (radius^2);
-end
+% Convert volume to radius, then cross-sectional area
+radius = (3 * gas_volume / (4 * pi))^(1/3); % m
+area = pi * radius^2; % m^2
