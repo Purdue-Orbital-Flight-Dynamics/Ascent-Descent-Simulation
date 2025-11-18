@@ -37,7 +37,7 @@ function [drag_force] = drag_force_f(velocity, helium_mass, altitude)
 air_density = air_density_f(altitude); % kg/m^3
 
 % Balloon cross-sectional area
-cross_sectional_area = cross_sectional_area_balloon_f(altitude, helium_mass); % m^2
+cross_sectional_area = balloon_cross_sectional_area_f(altitude, helium_mass); % m^2
 
 % Drag coefficient (sphere approximation)
 DRAG_COEFFICIENT = 0.47; % dimensionless
