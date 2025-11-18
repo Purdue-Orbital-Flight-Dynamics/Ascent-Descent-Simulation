@@ -29,7 +29,7 @@ function [drag_force] = drag_force_f(velocity, helium_mass, altitude)
 % - altitude: geometric altitude above sea level, m, positive
 %
 % Output variables:
-% - f_d: aerodynamic drag force acting on balloon, N
+% - drag_force: aerodynamic drag force acting on balloon, N
 %
 %************************************************************************
 
