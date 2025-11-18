@@ -26,7 +26,7 @@ function volume = volume_balloon_f(altitude, helium_mass)
 %************************************************************************
 
 % Calculate density
-density_balloon = density_balloon_f(altitude); % in kg/m^3
+density_balloon = balloon_density_f(altitude); % in kg/m^3
 
 % Calculate volume
 volume = helium_mass / density_balloon; % in m^3
