@@ -1,28 +1,42 @@
-function F_buoyant = buoyant_force(altitude, helium_mass)
-%{
-Calculates the density of helium within the balloon.
+function F_buoyant = buoyant_force_f(altitude, helium_mass)
 
-Aanand Shah
-Jack Triglianos
-%}
+%************************************************************************
+% Purdue Orbital, Flight Dynamics
+%
+% Project Name: Ascent/Descent Modeling
+%
+% Function Name: buoyant_force_f
+% File Name: buoyant_force_f.m
+%
+% Contributors: Aanand Shah, Jack Triglianos
+% Date Created: 11/??/2025
+% Last Updated: 11/17/2025
+%
+% Function Description:
+%   Computes the buoyant force acting on the balloon using Archimedes'
+%   principle. Assumes ideal gas behavior and equilibrium between internal
+%   and external pressure and temperature.
+%
+% References: 
+%
+% Input variables:
+% - altitude: geometric altitude, m, positive
+% - helium_mass: mass of helium in the balloon, kg, positive
+%
+% Output variables:
+% - F_buoyant: buoyant force on the balloon, N
+%
+%************************************************************************
 
-% (1) calculate temperature and pressure
-[temp_data(1), temp_data(2), temp_data(3)] = temperature(altitude);
-temp = temp_data(1);
-temp_inital = temp_data(2);
-slope = temp_data(3);
-pressure = external_pressure(altitude, temp, temp_inital, slope);
+% Compute densities
+density_b = balloon_density_f(altitude); % kg/m^3
+density_a = air_density_f(altitude); % kg/m^3
 
-% (2) calculate density of the air and of the balloon
-density_b = density_balloon(altitude);
-density_a = density_air(altitude);
+% Compute gravitational acceleration
+g = gravitationalAcceleration(altitude); % m/s^2
 
-% (3) calculate the gravitational acceleration
-g = gravitationalAcceleration(altitude);
+% Compute balloon volume
+vol = balloon_volume_f(altitude, helium_mass); % m^3
 
-% (4) calculate the volume of the balloon
-vol = volume(altitude, helium_mass);
-
-% (5) Calculate the buoyant force using Archimedes' principle
-F_buoyant = (density_a - density_b) * vol * g;
-end
+% Buoyant force (Archimedes)
+F_buoyant = (density_a - density_b) * vol * g; % N
