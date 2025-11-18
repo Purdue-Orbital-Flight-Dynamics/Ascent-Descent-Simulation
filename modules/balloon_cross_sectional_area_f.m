@@ -19,7 +19,7 @@ function [area] = balloon_cross_sectional_area_f(altitude, helium_mass)
 %   - Internal pressure equals external pressure
 %   - Internal temperature equals external temperature
 %
-% References:
+% References: N/A
 %
 % Input variables:
 % - altitude: geometric altitude, meters, positive

@@ -16,8 +16,7 @@ function [density] = air_density_f(altitude)
 %   equation of state for an ideal gas. Temperature and pressure are 
 %   obtained from standard-atmosphere helper functions.
 %
-% References:
-%   
+% References: N/A   
 %
 % Input variables:
 % - altitude: geometric altitude, meters, positive
