@@ -87,11 +87,11 @@ A7_INITIAL = A6_FINAL; % start of gradient (ellipse)
 A7_FINAL = 100000; % end of graph
 
 % Slopes
-D1 = (T1_FINAL - T1_INITIAL) / (A1_FINAL - A1_INITIAL);
-D3a = (T3a_FINAL - T3a_INITIAL) / (A3a_FINAL - A3a_INITIAL);
-D3b = (T3b_FINAL - T3b_INITIAL) / (A3b_FINAL - A3b_INITIAL);
-D5a = (T5a_FINAL - T5a_INITIAL) / (A5a_FINAL - A5a_INITIAL);
-D5b = (T5b_FINAL - T5b_INITIAL) / (A5b_FINAL - A5b_INITIAL);
+D1 = (T1_FINAL - T1_INITIAL) / (A1_FINAL - A1_INITIAL); % in K/m
+D3a = (T3a_FINAL - T3a_INITIAL) / (A3a_FINAL - A3a_INITIAL); % in K/m
+D3b = (T3b_FINAL - T3b_INITIAL) / (A3b_FINAL - A3b_INITIAL); % in K/m
+D5a = (T5a_FINAL - T5a_INITIAL) / (A5a_FINAL - A5a_INITIAL); % in K/m
+D5b = (T5b_FINAL - T5b_INITIAL) / (A5b_FINAL - A5b_INITIAL); % in K/m
 
 % *************************************************************************
 % 
@@ -105,57 +105,57 @@ a7_initial_H = A7_INITIAL*6356766/(6356766+ A7_INITIAL);
 
 % Layer 1 (gradient)
 if altitude_H >= A1_INITIAL && altitude_H < A1_FINAL
-    temperature = D1 * (altitude_H - A1_INITIAL) + T1_INITIAL;
-    initial_temperature = T1_INITIAL;
-    slope_variable = D1;
+    temperature = D1 * (altitude_H - A1_INITIAL) + T1_INITIAL; % in K
+    initial_temperature = T1_INITIAL; % in K
+    slope_variable = D1; % unitless
 
 % Layer 2 (pause)
 elseif altitude_H >= A2_INITIAL && altitude_H < A2_FINAL
-    temperature = T2_INITIAL;
-    initial_temperature = T2_INITIAL;
-    slope_variable = 0;
+    temperature = T2_INITIAL; % in K
+    initial_temperature = T2_INITIAL; % in K
+    slope_variable = 0; % unitless
 
 % Layer 3a (gradient)
 elseif altitude_H >= A3a_INITIAL && altitude_H < A3a_FINAL
-    temperature = D3a * (altitude_H - A3a_INITIAL) + T3a_INITIAL;
-    initial_temperature = T3a_INITIAL;
-    slope_variable = D3a;
+    temperature = D3a * (altitude_H - A3a_INITIAL) + T3a_INITIAL; % in K
+    initial_temperature = T3a_INITIAL; % in K
+    slope_variable = D3a; % unitless
 
 % Layer 3a (gradient)
 elseif altitude_H >= A3b_INITIAL && altitude_H < A3b_FINAL
-    temperature = D3b * (altitude_H - A3b_INITIAL) + T3b_INITIAL;
-    initial_temperature = T3b_INITIAL;
-    slope_variable = D3b;
+    temperature = D3b * (altitude_H - A3b_INITIAL) + T3b_INITIAL; % in K
+    initial_temperature = T3b_INITIAL; % in K
+    slope_variable = D3b; % unitless
 
 % Layer 4 (pause)
 elseif altitude_H >= A4_INITIAL && altitude_H < A4_FINAL
-    temperature = T4_INITIAL;
-    initial_temperature = T4_INITIAL;
-    slope_variable = 0;
+    temperature = T4_INITIAL; % in K
+    initial_temperature = T4_INITIAL; % in K
+    slope_variable = 0; % unitless
 
 % Layer 5a (gradient)
 elseif altitude_H >= A5a_INITIAL && altitude_H < A5a_FINAL
-    temperature = D5a * (altitude_H - A5a_INITIAL) + T5a_INITIAL;
-    initial_temperature = T5a_INITIAL;
-    slope_variable = D5a;
+    temperature = D5a * (altitude_H - A5a_INITIAL) + T5a_INITIAL; % in K
+    initial_temperature = T5a_INITIAL; % in K
+    slope_variable = D5a; % unitless
 
 % Layer 5b (gradient)
 elseif altitude_H >= A5b_INITIAL && altitude_H < A5b_FINAL
-    temperature = D5b * (altitude_H - A5b_INITIAL) + T5b_INITIAL;
-    initial_temperature = T5b_INITIAL;
-    slope_variable = D5b;
+    temperature = D5b * (altitude_H - A5b_INITIAL) + T5b_INITIAL; % in K
+    initial_temperature = T5b_INITIAL; % in K
+    slope_variable = D5b; % unitless
 
 % Layer 6 (pause)
 elseif altitude_H >= A6_INITIAL && altitude_H < A6_FINAL
-    temperature = T6_INITIAL;
-    initial_temperature = T6_INITIAL;
-    slope_variable = 0;
+    temperature = T6_INITIAL; % in K
+    initial_temperature = T6_INITIAL; % in K
+    slope_variable = 0; % unitless
 
 % Layer 7 (gradient, ellipse)
 elseif altitude_H >= A7_INITIAL && altitude_H <= A7_FINAL % end of graph
-    temperature = T_C + C1 * (1 - ((altitude_Z - a7_initial_H) / C2) ^ 2) ^ 0.5;
-    initial_temperature = T7_INITIAL;
-    slope_variable = 0;
+    temperature = T_C + C1 * (1 - ((altitude_Z - a7_initial_H) / C2) ^ 2) ^ 0.5; % in K
+    initial_temperature = T7_INITIAL; % in K
+    slope_variable = 0; % unitless
 
 % All altitudes not within the range 
 else
