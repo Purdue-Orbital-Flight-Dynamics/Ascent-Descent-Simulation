@@ -31,6 +31,6 @@ GAS_CONSTANT = 8.31432e3;  % Universal gas constant, N*m/(kmol*K)
 
 molecular_weight = molecular_weight_air_f(); % kmol/kg
 [temperature, initial_temperature, slope] = temperature_f(altitude);  % K, K, K/m
-pressure = external_pressure(altitude, temperature, initial_temperature, slope); % Pa
+pressure = pressure_f(altitude, temperature, initial_temperature, slope); % Pa
 
 density = (pressure * molecular_weight) / (GAS_CONSTANT * temperature); % kg/m^3
