@@ -27,7 +27,7 @@ function density_b = balloon_density_f(altitude)
 
 % Compute temperature and pressure
 [temperature, temperature_initial, lapse_rate] = temperature_f(altitude); % K, K, K/m
-pressure = external_pressure(altitude, temperature, temperature_initial, lapse_rate); % Pa
+pressure = pressure_f(altitude, temperature, temperature_initial, lapse_rate); % Pa
 
 % Constants (SI mol-based)
 GAS_CONSTANT = 8.314462618; % J/(mol·K)
