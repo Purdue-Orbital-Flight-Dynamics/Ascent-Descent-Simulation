@@ -20,7 +20,7 @@ function [area] = balloon_cross_sectional_area_f(altitude, helium_mass)
 %   - Internal temperature equals external temperature
 %
 % References:
-%   Purdue Orbital Flight Dynamics Coding Standard
+%   
 %
 % Input variables:
 % - altitude: geometric altitude, meters, positive
