@@ -19,11 +19,11 @@ slope = temp_data(3);
 p = external_pressure(altitude, t, temp_inital, slope);
 
 % (2) calculate mols of helium
-HELIUM_MOLAR_MASS = 0.00400261;
+HELIUM_MOLAR_MASS = 4.00261; % kg/kmol
 n = helium_mass / HELIUM_MOLAR_MASS;
 
 % (3) utilize ideal gas law to calculate volume of gas
-R = 8.314; %J/(mol*k)
+R = 8.314e3; %J/(kmol*k)
 v = n*R*t/p;
 
 % (4) use volume to calculate cross setional area of the sphere

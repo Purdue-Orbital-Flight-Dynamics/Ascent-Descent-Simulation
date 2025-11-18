@@ -18,22 +18,22 @@ buoyant_force_start_index = 200; % [N]
 buoyant_force_end_index = 600; % [N]
 dt         = 1;      % [s]
 stop_steps = 1000; % [s]
-bouyant_step = 10;
+buoyant_step = 50;
 
 % --- Inputs
 burst_altitude     = input("Enter balloon burst altitude (m)    : ");
 start_altitude     = input("Enter starting altitude (m)         : ");
 target_ascent_rate = input("Enter desired ascent rate (m/s)     : ");
 
-for initial_buoyant_force = buoyant_force_start_index:bouyant_step:buoyant_force_end_index
+for initial_buoyant_force = buoyant_force_start_index:buoyant_step:buoyant_force_end_index
 
     % --- Initial conditions
     cur_time      = 0;                    % [s]
     position      = start_altitude;                    % [m]
     velocity      = 0;                    % [m/s]
     acceleration  = 0;                    % [m/s^2]
-    total_mass    = system_mass(start_altitude, initial_buoyant_force) % [kg]
-    helium_mass   = heliumMass(start_altitude, initial_buoyant_force)
+    total_mass    = system_mass(start_altitude, initial_buoyant_force); % [kg]
+    helium_mass   = heliumMass(start_altitude, initial_buoyant_force);
 
     % --- Statistics
     avg_ascent_rate = 0; % [m/s]
@@ -54,18 +54,23 @@ for initial_buoyant_force = buoyant_force_start_index:bouyant_step:buoyant_force
         end
 
         % --- Forces
-        drag_force          = dragForce(velocity, helium_mass, position)
-        gravitational_force = -gravitationalForce(position, total_mass)
-        buoyant_force       = buoyantForce(position, helium_mass)
+        drag_force          = dragForce(velocity, helium_mass, position);
+        gravitational_force = -gravitationalForce(position, total_mass);
+        buoyant_force       = buoyantForce(position, helium_mass);
         
         net_force           = buoyant_force - drag_force + gravitational_force;
         if net_force < 0
+            fprintf("**********************************\n")
+            disp(net_force)
+            disp(position)
+            disp(initial_buoyant_force)
+            disp(drag_force)
             break
         end
 
         % --- Update state
         acceleration = net_force / total_mass;
-        velocity     = velocity + acceleration * dt
+        velocity     = velocity + acceleration * dt;
         position     = position + velocity * dt;
 
         % --- Update vector logs
@@ -80,12 +85,16 @@ for initial_buoyant_force = buoyant_force_start_index:bouyant_step:buoyant_force
         % --- Progress time
         k = k + 1;
         cur_time = cur_time + dt;
+
+        possssssss = x(end);
     end
     
-    if abs(avg_ascent_rate) < abs(closest_ascent_rate)
+    if abs(avg_ascent_rate - target_ascent_rate) < abs(closest_ascent_rate - target_ascent_rate)
         closest_ascent_rate = avg_ascent_rate;
-        best_buoyancy_force = buoyant_force;
+        best_buoyancy_force = initial_buoyant_force;
+        pos_disp = possssssss;
     end
 end
 
 disp(best_buoyancy_force + " N buoyancy force results in an avg. velocity of " + closest_ascent_rate + " m/s");
+disp(pos_disp)

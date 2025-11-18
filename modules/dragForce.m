@@ -15,7 +15,7 @@ Samuel Landers
 air_density = density_air(altitude);
 
 % (2) get the cross sectional area of the balloon
-cross_sec_area = cross_sectional_area_balloon(altitude, helium_mass);
+cross_sec_area = cross_sectional_area_balloon(altitude, helium_mass)
 
 % (3) calculate drag force
 DRAG_COEFFICIENT = 0.47;
