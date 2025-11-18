@@ -27,7 +27,7 @@ function [density] = air_density_f(altitude)
 %************************************************************************
 
 % Constants
-GAS_CONSTANT = 8.31432e3;  % Universal gas constant, N*m/(kmol*K)
+GAS_CONSTANT = 8.31432;  % Universal gas constant, N*m/(mol*K)
 
 molecular_weight = molecular_weight_air_f(); % kg/mol
 [temperature, initial_temperature, slope] = temperature_f(altitude);  % K, K, K/m
