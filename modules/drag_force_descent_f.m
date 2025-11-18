@@ -1,4 +1,4 @@
-function f_d = drag_force_descent_f(velocity, altitude)
+function [drag_force] = drag_force_descent_f(velocity, altitude)
 
 %************************************************************************
 % Purdue Orbital, Flight Dynamics
@@ -41,4 +41,4 @@ cross_sec_area = cross_sectional_area_parachute_f(); % m^2
 DRAG_COEFFICIENT = 1.75; % dimensionless
 
 % Compute drag force
-f_d = 0.5 * DRAG_COEFFICIENT * air_density * cross_sec_area * velocity^2; % N
+drag_force = 0.5 * DRAG_COEFFICIENT * air_density * cross_sec_area * velocity^2; % N
