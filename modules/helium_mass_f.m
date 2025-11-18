@@ -33,7 +33,7 @@ balloon_density = balloon_density_f(altitude); % in kg/m^3
 air_density = air_density_f(altitude); % in kg/m^3
 
 % Acceleration
-gravity_acceleration = gravity_acceleration_f(altitudealtitude); % in m/s^2
+gravity_acceleration = gravity_acceleration_f(altitude); % in m/s^2
 
 % Volume
 volume = buoyancy_force / (air_density - balloon_density) / gravity_acceleration; % in kg/m^3
