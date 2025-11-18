@@ -35,7 +35,7 @@ air_density = air_density_f(altitude); % in kg/m^3
 gravity_acceleration = gravity_acceleration_f(altitude); % in m/s^2
 
 % Compute balloon volume
-volume = balloon_volume_f(altitude, helium_mass); % in m^3
+volume = volume_balloon_f(altitude, helium_mass); % in m^3
 
 % Buoyant force (Archimedes)
 buoyant_force = (air_density) * volume * gravity_acceleration; % in N
