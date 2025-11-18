@@ -32,8 +32,8 @@ for initial_buoyant_force = buoyant_force_start_index:buoyant_step:buoyant_force
     position      = start_altitude;                    % [m]
     velocity      = 0;                    % [m/s]
     acceleration  = 0;                    % [m/s^2]
-    total_mass    = system_mass(start_altitude, initial_buoyant_force); % [kg]
-    helium_mass   = heliumMass(start_altitude, initial_buoyant_force);
+    total_mass    = system_mass_f(start_altitude, initial_buoyant_force); % [kg]
+    helium_mass   = helium_mass_f(start_altitude, initial_buoyant_force);
 
     % --- Statistics
     avg_ascent_rate = 0; % [m/s]
@@ -54,9 +54,9 @@ for initial_buoyant_force = buoyant_force_start_index:buoyant_step:buoyant_force
         end
 
         % --- Forces
-        drag_force          = dragForce(velocity, helium_mass, position);
-        gravitational_force = -gravitationalForce(position, total_mass);
-        buoyant_force       = buoyantForce(position, helium_mass);
+        drag_force          = drag_force_f(velocity, helium_mass, position);
+        gravitational_force = -gravity_force_f(position, total_mass);
+        buoyant_force       = buoyant_force_f(position, helium_mass);
         
         net_force           = buoyant_force - drag_force + gravitational_force;
         if net_force < 0
