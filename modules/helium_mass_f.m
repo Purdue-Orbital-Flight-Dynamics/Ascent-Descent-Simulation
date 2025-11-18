@@ -1,35 +1,43 @@
-function [helium_mass] = helium_mass_f(initial_altitude, initial_buoyancy_force)
-%{
-Calculates the required mass of helium to attain a certain bouyant
-force at a given altittude.
+function [helium_mass] = helium_mass_f(altitude, buoyancy_force)
 
-Garion Cheng
-Eric Umminger
-Jack Triglianos
-Samuel Landers
-%}
+%************************************************************************
+% Purdue Orbital, Flight Dynamics
+% 
+% Project Name: Ascent Modeling
+% 
+% Function Name: helium_mass_f
+% File Name: helium_mass_f
+%
+% Contributors: Garion Cheng, Eric Umminger, Jack Triglianos, Samuel Landers
+% Date Created: 10/??/2025
+% Last Updated: 11/17/2025
+%
+% Function Description: This function will calculate the mass of helium given 
+% an altitude and buoyancy force.
+% 
+% References: N/A
+%
+% Input variables:
+% - altitude: altitude, in meters, positive
+% - buoyancy_force: buoyancy force, in Newtons, positive
+%
+% Output variables: 
+% - helium_mass: helium mass, in kilograms, positive
+% 
+%************************************************************************
 
-% (1) calculate temperature and pressure
-[temperature_K, t_initial, slope_variable] = temperature(initial_altitude);
-temp_data = [temperature_K, t_initial, slope_variable];
-temp = temp_data(1);
-temp_inital = temp_data(2);
-slope = temp_data(3);
-pressure = external_pressure(initial_altitude, temp, temp_inital, slope);
+% Calculations
 
-% (2) get the molecular weight of the air
-mol_weight = molecular_weight_air();
+% Densities
+balloon_density = balloon_density_f(altitude); % in kg/m^3
+air_density = air_density_f(altitude); % in kg/m^3
 
-% (3) calculate the density of the air and within the balloon
-density_b = density_balloon(initial_altitude); % in kg/m^3
-density_a = density_air(initial_altitude);
+% Acceleration
+gravity_acceleration = gravity_acceleration_f(altitudealtitude); % in m/s^2
 
-% (4) get the gravitational acceleration
-gravity = gravitationalAcceleration(initial_altitude); % in m/s^2
+% Volume
+volume = buoyancy_force / (air_density - balloon_density) / gravity_acceleration; % in kg/m^3
 
-% (5) calculate volume of the balloon
-volume = initial_buoyancy_f / (density_a - density_b) / gravity;
+% Helium mass
+helium_mass = balloon_density * volume; % in kg
 
-% (6) use volume and desnity to determine the mass of the balloon
-mass = density_b * volume;
-end
