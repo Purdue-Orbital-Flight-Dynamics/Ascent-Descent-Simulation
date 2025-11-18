@@ -1,4 +1,4 @@
-function molecular_weight_air = molecular_weight_air_f()
+function [molecular_weight_air] = molecular_weight_air_f()
 
 %************************************************************************
 % Purdue Orbital, Flight Dynamics
