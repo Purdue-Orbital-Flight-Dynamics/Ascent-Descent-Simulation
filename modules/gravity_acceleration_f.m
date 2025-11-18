@@ -32,3 +32,5 @@ G_0 = 9.80665; % m/s^2, standard gravity at sea level
 R_EARTH = 6371009; % m, average Earth radius
 
 gravity = G_0 * (R_EARTH / (R_EARTH + altitude))^2; % m/s^2
+
+% THIS RETURNS A MAGNITUDE
