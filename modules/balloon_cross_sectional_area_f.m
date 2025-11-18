@@ -32,7 +32,7 @@ function [area] = balloon_cross_sectional_area_f(altitude, helium_mass)
 
 % Calculate temperature and external pressure at altitude
 [temperature, initial_temperature, lapse_rate] = temperature_f(altitude); % K, K, K/m
-pressure = external_pressure(altitude, temperature, initial_temperature, lapse_rate); % Pa
+pressure = pressure_f(altitude, temperature, initial_temperature, lapse_rate); % Pa
 
 % Calculate amount of helium
 HELIUM_MOLAR_MASS = 4.00261; % kg/kmol
