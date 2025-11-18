@@ -3,7 +3,7 @@ function [temperature, t_initial, slope_variable] = temperature_f(altitude_Z)
 % *************************************************************************
 % Purdue Orbital, Flight Dynamics
 %
-% Project: Ascent Modelling
+% Project: Ascent Modeling
 % 
 % Function Name: temperature
 % File Name: temperature.m
@@ -17,7 +17,7 @@ function [temperature, t_initial, slope_variable] = temperature_f(altitude_Z)
 % between 0 and 100000 geometric meters. Temperature and altitude values 
 % and equations are taken from NASA's 1976 US standard atmosphere. 
 % 
-% Source: 
+% References: 
 % 
 % United States. National Oceanic and Atmospheric Administration. (1976). 
 % U.S. Standard Atmosphere, 1976: NOAA-S/T 76-1562. U.S. Government
@@ -26,11 +26,11 @@ function [temperature, t_initial, slope_variable] = temperature_f(altitude_Z)
 % dard-atmosphere_st76-1562_noaa.pdf
 %
 % Input variables:
-% - altitude_Z: altitude, meters (geometric), positive
+% - altitude_Z: altitude, in geometric meters, positive
 %
 % Output variables: 
-% - temperature: calculated temperature, in K, positive
-% - t_initial: Initial temperature for respective layer, in K, positive
+% - temperature: calculated temperature, in Kelvin, positive
+% - t_initial: Initial temperature for respective layer, in Kelvin, positive
 % - slope_variable: 0 is a pause and any other value is a slope, unitless, any sign
 % 
 % *************************************************************************
