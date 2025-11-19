@@ -1,31 +1,23 @@
-function [temperature_K, t_initial, slope_variable] = temperature(altitude_Z_m)
-%{
-Calculates the temperature (K) at a given altitude (m).
-
-https://www.ngdc.noaa.gov/stp/space-weather/online-publications/miscellan
-eous/us-standard-atmosphere-1976/us-standard-atmosphere_st76-1562_noaa.pdf
-
-Eric Umminger
-Cayden Varno
-garion Cheng
-%}
+function [temperature, initial_temperature, slope_variable] = temperature_f(altitude_Z)
 
 % *************************************************************************
-% Purdue Orbital, Flight Dynamics, Ascent Modeling
+% Purdue Orbital, Flight Dynamics
+%
+% Project: Ascent Modeling
 % 
 % Function Name: temperature
 % File Name: temperature.m
 %
-% Contributors: Eric, Cayden, Garion
+% Contributors: Eric Umminger, Cayden Varno, Garion Cheng
 % Date Started: 10/27/2025
-% Last Updated: 10/27/2025
+% Last Updated: 11/17/2025
 %
 % Function Description: This function will accept an input altitude (in 
 % geometric meters) and return a temperature (in Kelvin) for altitudes 
 % between 0 and 100000 geometric meters. Temperature and altitude values 
 % and equations are taken from NASA's 1976 US standard atmosphere. 
 % 
-% Source: 
+% References: 
 % 
 % United States. National Oceanic and Atmospheric Administration. (1976). 
 % U.S. Standard Atmosphere, 1976: NOAA-S/T 76-1562. U.S. Government
@@ -34,12 +26,12 @@ garion Cheng
 % dard-atmosphere_st76-1562_noaa.pdf
 %
 % Input variables:
-% - altitude_Z_m: altitude in geometric meters
+% - altitude_Z: altitude, in geometric meters, positive
 %
 % Output variables: 
-% - temperature_K: calculated temperature
-% - t_initial: Initial temperature for respective layer
-% - slope_variable: 0 is pause, any other value is slope
+% - temperature: calculated temperature, in Kelvin, positive
+% - initial_temperature: initial temperature for respective layer, in Kelvin, positive
+% - slope_variable: 0 is a pause and any other value is a slope, unitless, any sign
 % 
 % *************************************************************************
 
@@ -95,11 +87,11 @@ A7_INITIAL = A6_FINAL; % start of gradient (ellipse)
 A7_FINAL = 100000; % end of graph
 
 % Slopes
-D1 = (T1_FINAL - T1_INITIAL) / (A1_FINAL - A1_INITIAL);
-D3a = (T3a_FINAL - T3a_INITIAL) / (A3a_FINAL - A3a_INITIAL);
-D3b = (T3b_FINAL - T3b_INITIAL) / (A3b_FINAL - A3b_INITIAL);
-D5a = (T5a_FINAL - T5a_INITIAL) / (A5a_FINAL - A5a_INITIAL);
-D5b = (T5b_FINAL - T5b_INITIAL) / (A5b_FINAL - A5b_INITIAL);
+D1 = (T1_FINAL - T1_INITIAL) / (A1_FINAL - A1_INITIAL); % in K/m
+D3a = (T3a_FINAL - T3a_INITIAL) / (A3a_FINAL - A3a_INITIAL); % in K/m
+D3b = (T3b_FINAL - T3b_INITIAL) / (A3b_FINAL - A3b_INITIAL); % in K/m
+D5a = (T5a_FINAL - T5a_INITIAL) / (A5a_FINAL - A5a_INITIAL); % in K/m
+D5b = (T5b_FINAL - T5b_INITIAL) / (A5b_FINAL - A5b_INITIAL); % in K/m
 
 % *************************************************************************
 % 
@@ -108,62 +100,62 @@ D5b = (T5b_FINAL - T5b_INITIAL) / (A5b_FINAL - A5b_INITIAL);
 % *************************************************************************
 
 % Coverting to geopotential altitude
-altitude_H_m = Z2H(altitude_Z_m);
+altitude_H = geometric_to_geopotential_f(altitude_Z);
 a7_initial_H = A7_INITIAL*6356766/(6356766+ A7_INITIAL);
 
 % Layer 1 (gradient)
-if altitude_H_m >= A1_INITIAL && altitude_H_m < A1_FINAL
-    temperature_K = D1 * (altitude_H_m - A1_INITIAL) + T1_INITIAL;
-    t_initial = T1_INITIAL;
-    slope_variable = D1;
+if altitude_H >= A1_INITIAL && altitude_H < A1_FINAL
+    temperature = D1 * (altitude_H - A1_INITIAL) + T1_INITIAL; % in K
+    initial_temperature = T1_INITIAL; % in K
+    slope_variable = D1; % unitless
 
 % Layer 2 (pause)
-elseif altitude_H_m >= A2_INITIAL && altitude_H_m < A2_FINAL
-    temperature_K = T2_INITIAL;
-    t_initial = T2_INITIAL;
-    slope_variable = 0;
+elseif altitude_H >= A2_INITIAL && altitude_H < A2_FINAL
+    temperature = T2_INITIAL; % in K
+    initial_temperature = T2_INITIAL; % in K
+    slope_variable = 0; % unitless
 
 % Layer 3a (gradient)
-elseif altitude_H_m >= A3a_INITIAL && altitude_H_m < A3a_FINAL
-    temperature_K = D3a * (altitude_H_m - A3a_INITIAL) + T3a_INITIAL;
-    t_initial = T3a_INITIAL;
-    slope_variable = D3a;
+elseif altitude_H >= A3a_INITIAL && altitude_H < A3a_FINAL
+    temperature = D3a * (altitude_H - A3a_INITIAL) + T3a_INITIAL; % in K
+    initial_temperature = T3a_INITIAL; % in K
+    slope_variable = D3a; % unitless
 
 % Layer 3a (gradient)
-elseif altitude_H_m >= A3b_INITIAL && altitude_H_m < A3b_FINAL
-    temperature_K = D3b * (altitude_H_m - A3b_INITIAL) + T3b_INITIAL;
-    t_initial = T3b_INITIAL;
-    slope_variable = D3b;
+elseif altitude_H >= A3b_INITIAL && altitude_H < A3b_FINAL
+    temperature = D3b * (altitude_H - A3b_INITIAL) + T3b_INITIAL; % in K
+    initial_temperature = T3b_INITIAL; % in K
+    slope_variable = D3b; % unitless
 
 % Layer 4 (pause)
-elseif altitude_H_m >= A4_INITIAL && altitude_H_m < A4_FINAL
-    temperature_K = T4_INITIAL;
-    t_initial = T4_INITIAL;
-    slope_variable = 0;
+elseif altitude_H >= A4_INITIAL && altitude_H < A4_FINAL
+    temperature = T4_INITIAL; % in K
+    initial_temperature = T4_INITIAL; % in K
+    slope_variable = 0; % unitless
 
 % Layer 5a (gradient)
-elseif altitude_H_m >= A5a_INITIAL && altitude_H_m < A5a_FINAL
-    temperature_K = D5a * (altitude_H_m - A5a_INITIAL) + T5a_INITIAL;
-    t_initial = T5a_INITIAL;
-    slope_variable = D5a;
+elseif altitude_H >= A5a_INITIAL && altitude_H < A5a_FINAL
+    temperature = D5a * (altitude_H - A5a_INITIAL) + T5a_INITIAL; % in K
+    initial_temperature = T5a_INITIAL; % in K
+    slope_variable = D5a; % unitless
 
 % Layer 5b (gradient)
-elseif altitude_H_m >= A5b_INITIAL && altitude_H_m < A5b_FINAL
-    temperature_K = D5b * (altitude_H_m - A5b_INITIAL) + T5b_INITIAL;
-    t_initial = T5b_INITIAL;
-    slope_variable = D5b;
+elseif altitude_H >= A5b_INITIAL && altitude_H < A5b_FINAL
+    temperature = D5b * (altitude_H - A5b_INITIAL) + T5b_INITIAL; % in K
+    initial_temperature = T5b_INITIAL; % in K
+    slope_variable = D5b; % unitless
 
 % Layer 6 (pause)
-elseif altitude_H_m >= A6_INITIAL && altitude_H_m < A6_FINAL
-    temperature_K = T6_INITIAL;
-    t_initial = T6_INITIAL;
-    slope_variable = 0;
+elseif altitude_H >= A6_INITIAL && altitude_H < A6_FINAL
+    temperature = T6_INITIAL; % in K
+    initial_temperature = T6_INITIAL; % in K
+    slope_variable = 0; % unitless
 
 % Layer 7 (gradient, ellipse)
-elseif altitude_H_m >= A7_INITIAL && altitude_H_m <= A7_FINAL % end of graph
-    temperature_K = T_C + C1 * (1 - ((altitude_Z_m - a7_initial_H) / C2) ^ 2) ^ 0.5;
-    t_initial = T7_INITIAL;
-    slope_variable = 0;
+elseif altitude_H >= A7_INITIAL && altitude_H <= A7_FINAL % end of graph
+    temperature = T_C + C1 * (1 - ((altitude_Z - a7_initial_H) / C2) ^ 2) ^ 0.5; % in K
+    initial_temperature = T7_INITIAL; % in K
+    slope_variable = 0; % unitless
 
 % All altitudes not within the range 
 else
