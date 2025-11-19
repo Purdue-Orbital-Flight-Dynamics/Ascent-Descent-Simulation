@@ -16,7 +16,7 @@ startup()
 % --- Inputs
 burst_altitude = input("Enter balloon burst altitude (m)    : ");
 ground_level   = input("Enter ground level (m)              : ");
-burst_velocity  = input("Enter velocity at burst (m/s)     : ");
+burst_velocity  = input("Enter velocity at burst (m/s)      : ");
 
 % --- Initial conditions
 cur_time      = 0;                    % [s]

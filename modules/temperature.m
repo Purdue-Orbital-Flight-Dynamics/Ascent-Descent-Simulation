@@ -167,7 +167,6 @@ elseif altitude_H_m >= A7_INITIAL && altitude_H_m <= A7_FINAL % end of graph
 
 % All altitudes not within the range 
 else
-    fprintf(['* * * * * ERROR * * * * *\n\nAltitude out of acceptable ' ...
-        'range\nTemperature not calculated\n']);
+    fprintf(['Error: temperature function failed--altitude out of acceptable range']);
 end
 

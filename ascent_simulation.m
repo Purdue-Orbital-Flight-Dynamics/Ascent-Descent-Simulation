@@ -1,4 +1,3 @@
-clear
 %{
 
 Simulation driver and entry point.
@@ -8,6 +7,9 @@ Assumes buoyancy force on balloon is constant.
 Samuel Landers
 
 %}
+
+% Clear environment variables from previous runs
+clear
 
 % Ensure modules are accessible
 startup()
@@ -32,8 +34,8 @@ for initial_buoyant_force = buoyant_force_start_index:bouyant_step:buoyant_force
     position      = start_altitude;                    % [m]
     velocity      = 0;                    % [m/s]
     acceleration  = 0;                    % [m/s^2]
-    total_mass    = system_mass(start_altitude, initial_buoyant_force) % [kg]
-    helium_mass   = heliumMass(start_altitude, initial_buoyant_force)
+    total_mass    = system_mass(start_altitude, initial_buoyant_force); % [kg]
+    helium_mass   = heliumMass(start_altitude, initial_buoyant_force);
 
     % --- Statistics
     avg_ascent_rate = 0; % [m/s]
@@ -46,7 +48,9 @@ for initial_buoyant_force = buoyant_force_start_index:bouyant_step:buoyant_force
     k = 2;
 
     % --- Loop until balloon reaches burst altitude
+    disp("---");
     while position < burst_altitude
+        disp(position);
 
         % --- Exit if taking too long
         if (k >= stop_steps)
@@ -54,18 +58,25 @@ for initial_buoyant_force = buoyant_force_start_index:bouyant_step:buoyant_force
         end
 
         % --- Forces
-        drag_force          = dragForce(velocity, helium_mass, position)
-        gravitational_force = -gravitationalForce(position, total_mass)
-        buoyant_force       = buoyantForce(position, helium_mass)
+        drag_force          = dragForce(velocity, helium_mass, position);
+        gravitational_force = gravitationalForce(position, total_mass);
+        buoyant_force       = buoyantForce(position, helium_mass);
         
         net_force           = buoyant_force - drag_force + gravitational_force;
-        if net_force < 0
-            break
-        end
 
+        % --- Sanity checks
+        if net_force < 0
+            % Balloon should always be going up
+            break
+        elseif gravitational_force > 0
+            % Gravity should always be negative
+            disp("Error: gravity was positive");
+            return;
+        end
+       
         % --- Update state
         acceleration = net_force / total_mass;
-        velocity     = velocity + acceleration * dt
+        velocity     = velocity + acceleration * dt;
         position     = position + velocity * dt;
 
         % --- Update vector logs
