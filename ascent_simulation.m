@@ -26,8 +26,9 @@ buoyant_step = 50;
 burst_altitude     = input("Enter balloon burst altitude (m)    : ");
 start_altitude     = input("Enter starting altitude (m)         : ");
 target_ascent_rate = input("Enter desired ascent rate (m/s)     : ");
+initial_buoyant_force = buoyant_force_start_index;
 
-for initial_buoyant_force = buoyant_force_start_index:buoyant_step:buoyant_force_end_index
+%for initial_buoyant_force = buoyant_force_start_index:buoyant_step:buoyant_force_end_index
 
     % --- Initial conditions
     cur_time      = 0;                    % [s]
@@ -48,9 +49,7 @@ for initial_buoyant_force = buoyant_force_start_index:buoyant_step:buoyant_force
     k = 2;
 
     % --- Loop until balloon reaches burst altitude
-    disp("---");
     while position < burst_altitude
-        disp(position);
 
         % --- Exit if taking too long
         if (k >= stop_steps)
@@ -64,11 +63,6 @@ for initial_buoyant_force = buoyant_force_start_index:buoyant_step:buoyant_force
         
         net_force           = buoyant_force - drag_force + gravitational_force;
         if net_force < 0
-            fprintf("**********************************\n")
-            disp(net_force)
-            disp(position)
-            disp(initial_buoyant_force)
-            disp(drag_force)
             break
         end
 
@@ -106,9 +100,7 @@ for initial_buoyant_force = buoyant_force_start_index:buoyant_step:buoyant_force
     if abs(avg_ascent_rate - target_ascent_rate) < abs(closest_ascent_rate - target_ascent_rate)
         closest_ascent_rate = avg_ascent_rate;
         best_buoyancy_force = initial_buoyant_force;
-        pos_disp = possssssss;
     end
-end
+%end
 
 disp(best_buoyancy_force + " N buoyancy force results in an avg. velocity of " + closest_ascent_rate + " m/s");
-disp(pos_disp)
