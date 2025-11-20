@@ -28,6 +28,12 @@ function [helium_mass] = helium_mass_f(altitude, net_buoyancy_force)
 
 % Calculations
 
+% Other mass
+BALLOON_MASS = 1; % in kg
+NECK_MASS = 0; % in kg, neck closure system only
+ROPE_MASS = 0; % in kg, rope slack when inflating balloon
+OTHER_MASS = BALLOON_MASS + NECK_MASS + ROPE_MASS;
+
 % Densities
 balloon_density = balloon_density_f(altitude); % in kg/m^3
 air_density = air_density_f(altitude); % in kg/m^3
@@ -35,6 +41,9 @@ air_density = air_density_f(altitude); % in kg/m^3
 % Acceleration
 gravity_acceleration = gravity_acceleration_f(altitude); % in m/s^2
 
+% Other weight
+other_weight = OTHER_MASS * gravity_acceleration;
+
 % Helium mass
-helium_mass = (balloon_density * net_buoyancy_force) / (gravity_acceleration * (air_density - balloon_density)); % in kg
+helium_mass = (balloon_density * (net_buoyancy_force + other_weight)) / (gravity_acceleration * (air_density - balloon_density)); % in kg
 
