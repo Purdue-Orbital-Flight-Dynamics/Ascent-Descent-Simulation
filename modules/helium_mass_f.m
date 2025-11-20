@@ -30,7 +30,7 @@ function [helium_mass] = helium_mass_f(altitude, net_buoyancy_force)
 
 % Other mass
 BALLOON_MASS = 1; % in kg
-NECK_MASS = 1; % in kg, neck closure system only
+NECK_MASS = 0; % in kg, neck closure system only
 ROPE_MASS = 0; % in kg, rope slack when inflating balloon
 OTHER_MASS = BALLOON_MASS + NECK_MASS + ROPE_MASS;
 
