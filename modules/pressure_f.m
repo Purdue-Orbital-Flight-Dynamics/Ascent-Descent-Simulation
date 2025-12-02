@@ -1,5 +1,5 @@
-function [pressure] = pressure_f(altitude, temperature_calculated, temperature_initial, lapse_rate)
-
+function [pressure] = pressure_f(altitude_z, temperature_calculated, temperature_initial, lapse_rate)
+altitude = geometric_to_geopotential_f(altitude_z);
 %************************************************************************
 % Purdue Orbital, Flight Dynamics
 %
@@ -42,15 +42,15 @@ if altitude < 11100 % first gradient region
     pressure_initial = 1.01325e3; % mbar
     pressure_layer = pressure_initial * (temperature_calculated / temperature_initial)^(-G_0 / (lapse_rate * GAS_CONSTANT)); % mbar
 
-elseif altitude < Z2H(20000) % first isothermal (pause) region
+elseif altitude < 20000 % first isothermal (pause) region
     pressure_initial = 2.2346e2; % mbar
     pressure_layer = pressure_initial * exp(-(G_0 / (GAS_CONSTANT * 216.65)) * (altitude * 1000 - 11100)); % mbar
 
-elseif altitude < Z2H(47400) % second gradient region
+elseif altitude < 47400 % second gradient region
     pressure_initial = 55.292 * 10; % mbar
     pressure_layer = pressure_initial * (temperature_calculated / temperature_initial)^(-G_0 / (lapse_rate * GAS_CONSTANT)); % mbar
 
-elseif altitude < Z2H(51000) % second isothermal (pause) region
+elseif altitude < 51000 % second isothermal (pause) region
     pressure_initial = .70458; % mbar
     pressure_layer = pressure_initial * exp(-(G_0 / (GAS_CONSTANT * 270.65)) * (altitude * 1000 - 11100)); % mbar
 else
