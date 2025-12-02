@@ -32,7 +32,7 @@ NECK_MASS_KG = 0; % in kg, neck closure system only
 ROPE_MASS_KG = 0; % in kg, rope slack when inflating balloon
 OTHER_MASS_KG = 0; % in kg, any other masses to include
 
-
+% Calculations
 correction_mass_kg = BALLOON_MASS_KG + NECK_MASS_KG + ROPE_MASS_KG + OTHER_MASS_KG + helium_mass_kg; % in kg
 gravity_acceleration_mps2 = gravity_acceleration_f(position_m); % in m/s^2
 
