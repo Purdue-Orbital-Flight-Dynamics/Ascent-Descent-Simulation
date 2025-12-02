@@ -105,4 +105,3 @@ for initial_buoyant_force = buoyant_force_start_index:buoyant_step:buoyant_force
 end
 
 disp(best_buoyancy_force + " N buoyancy force results in an avg. velocity of " + closest_ascent_rate + " m/s");
-disp(size(x))
