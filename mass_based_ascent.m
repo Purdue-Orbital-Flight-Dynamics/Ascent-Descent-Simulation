@@ -31,19 +31,19 @@ clear
 %
 %************************************************************************
 
-time_step_s = 0.01;   % [s] integration time step
+time_step_s = 0.005;   % [s] integration time step
 
 burst_altitude_m = input("Burst Altitude [m]: ");           % [m]
 start_altitude_m = input("Starting Altitude [m]: ");        % [m]
 target_ascent_rate_mps = input("Desired Ascent Rate [m/s]: ");                 % [m/s]
 
-MASS_STEP_KG       = 0.005;   % [kg] helium mass increment per iteration
+MASS_STEP_KG       = 0.0005;   % [kg] helium mass increment per iteration
 helium_mass_kg     = -MASS_STEP_KG;  % [kg] so first loop adds to 0
 CONSTANT_MASS_KG   = 8.8;     % [kg] payload + structure, assumed constant
 ascent_rate_mps    = 0;       % [m/s] current mean ascent rate estimate
 
 MAX_HELIUM_MASS_KG = 50;      % [kg] safety limit on helium mass
-first_net_force_N  = NaN;     % [N] first net force at start altitude
+gage_force  = NaN;     % [N] first net force at start altitude
 
 while ascent_rate_mps < target_ascent_rate_mps && ...
       helium_mass_kg < MAX_HELIUM_MASS_KG
@@ -88,7 +88,7 @@ while ascent_rate_mps < target_ascent_rate_mps && ...
 
         % Save FIRST net force only (for this helium mass)
         if step_index == 1
-            first_net_force_N = buoyant_force_N - helium_mass_kg * gravity_acceleration_mps2;   % overwrite every run
+            gage_force = buoyant_force_N - helium_mass_kg * gravity_acceleration_mps2;   % overwrite every run
         end
 
         % Update state
@@ -121,4 +121,4 @@ disp("Mass for target rate [kg]:")
 disp(helium_mass_kg)
 
 disp("Initial net force for target rate [N]:")
-disp(first_net_force_N)
+disp(gage_force)
