@@ -43,8 +43,6 @@ gage_force  = np.nan         # [N] first net force at start altitude
 
 while ascent_rate_mps < target_ascent_rate_mps and helium_mass_kg < MAX_HELIUM_MASS_KG:
 
-    print("\n")
-
     # Reset state for this helium mass
     position_m  = start_altitude_m   # [m]
     velocity_mps = 0                 # [m/s]
@@ -57,18 +55,15 @@ while ascent_rate_mps < target_ascent_rate_mps and helium_mass_kg < MAX_HELIUM_M
     step_index  = 1
 
     helium_mass_kg = helium_mass_kg + MASS_STEP_KG   # [kg]
-    # fprintf("Helium mass: %.3f kg\n", helium_mass_kg)
 
     total_mass_kg = CONSTANT_MASS_KG + helium_mass_kg   # [kg]
 
     while position_m < burst_altitude_m:
-        # fprintf("Height: %.3f m ", position_m)
 
         # Compute buoyant force safely
         try:
             buoyant_force_N = buoyant_force_f(position_m, helium_mass_kg) # [N]
-        except Exception as ME:
-            print(f"Error in buoyant_force_f at position {position_m:.3f} m: {ME}")
+        except Exception:
             had_error = True
             break
 
@@ -77,7 +72,6 @@ while ascent_rate_mps < target_ascent_rate_mps and helium_mass_kg < MAX_HELIUM_M
         correction_force_N = force_correction_f(helium_mass_kg, position_m)      # [N]
 
         net_force_N = buoyant_force_N - drag_force_N - gravity_force_N           # [N]
-        # fprintf("    Net Force: %.3f N\n", net_force_N)
 
         # Save FIRST net force only (for this helium mass)
         if step_index == 1:
@@ -95,7 +89,6 @@ while ascent_rate_mps < target_ascent_rate_mps and helium_mass_kg < MAX_HELIUM_M
         acceleration_history_mps2.append(acceleration_mps2)
 
         if net_force_N <= 0:
-            print(f"Net force became non-positive after {step_index} steps")
             had_error = True
             break
 
@@ -103,10 +96,13 @@ while ascent_rate_mps < target_ascent_rate_mps and helium_mass_kg < MAX_HELIUM_M
 
     if not had_error and len(velocity_history_mps) > 0:
         ascent_rate_mps = np.mean(velocity_history_mps)    # [m/s]
-        print(f"Ascent Rate: {ascent_rate_mps:.4f} m/s")
 
+# FINAL OUTPUT ONLY
 print("Mass for target rate [kg]:")
-print(helium_mass_kg)
+print(f"{helium_mass_kg:.4f}")
 
 print("Initial net force for target rate [N]:")
-print(gage_force)
+print(f"{gage_force:.4f}")
+
+print("Final achieved ascent rate [m/s]:")
+print(f"{ascent_rate_mps:.4f}")
