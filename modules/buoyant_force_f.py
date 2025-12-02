@@ -4,7 +4,7 @@
 # Project Name: Ascent/Descent Modeling
 #
 # Function Name: buoyant_force_f
-# File Name: buoyant_force_f.m
+# File Name: buoyant_force_f.py
 #
 # Contributors: Aanand Shah, Jack Triglianos
 # Date Created: 11/??/2025

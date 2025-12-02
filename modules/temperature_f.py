@@ -3,8 +3,8 @@
 #
 # Project: Ascent Modeling
 # 
-# Function Name: temperature
-# File Name: temperature.m
+# Function Name: temperature_f
+# File Name: temperature_f.py
 #
 # Contributors: Eric Umminger, Cayden Varno, Garion Cheng
 # Date Started: 10/27/2025

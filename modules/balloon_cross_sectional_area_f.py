@@ -4,7 +4,7 @@
 # Project Name: Ascent/Descent Modeling
 #
 # Function Name: balloon_cross_sectional_area_f
-# File Name: balloon_cross_sectional_area_f.m
+# File Name: balloon_cross_sectional_area_f.py
 #
 # Contributors: Garion Cheng, Samuel Landers
 # Date Created: 10/??/2025

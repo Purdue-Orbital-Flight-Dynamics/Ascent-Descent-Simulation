@@ -4,7 +4,7 @@
 # Project Name: Ascent Modeling
 # 
 # Function Name: geometric_to_geopotential_f
-# File Name: geometric_to_geopotential_f
+# File Name: geometric_to_geopotential_f.py
 #
 # Contributors: Cayden
 # Date Created: 10/??/2025

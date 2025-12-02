@@ -4,7 +4,7 @@
 # Project Name: Ascent Modeling
 # 
 # Function Name: gravity_force_f
-# File Name: gravity_force_f
+# File Name: gravity_force_f.py
 #
 # Contributors: Jack Triglianos, Samuel Landers
 # Date Created: 10/??/2025

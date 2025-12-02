@@ -4,7 +4,7 @@
 # Project Name: Ascent/Descent Modeling
 #
 # Function Name: balloon_density_f
-# File Name: balloon_density_f.m
+# File Name: balloon_density_f.py
 #
 # Contributors: Aanand Shah, Samuel Landers
 # Date Created: 10/??/2025

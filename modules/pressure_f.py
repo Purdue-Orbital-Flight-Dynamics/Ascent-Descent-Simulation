@@ -4,7 +4,7 @@
 # Project Name: Ascent/Descent Modeling
 #
 # Function Name: pressure_f
-# File Name: pressure_f.m
+# File Name: pressure_f.py
 #
 # Contributors: Garion Cheng, Liam Shepard, Samuel Landers, Eric Umminger
 # Date Created: 10/??/2025

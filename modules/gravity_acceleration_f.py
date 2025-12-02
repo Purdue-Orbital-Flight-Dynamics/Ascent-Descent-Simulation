@@ -4,7 +4,7 @@
 # Project Name: Ascent/Descent Modeling
 #
 # Function Name: gravity_acceleration_f
-# File Name: gravity_acceleration_f.m
+# File Name: gravity_acceleration_f.py
 #
 # Contributors: Jack Triglianos, Samuel Landers
 # Date Created: 11/??/2025

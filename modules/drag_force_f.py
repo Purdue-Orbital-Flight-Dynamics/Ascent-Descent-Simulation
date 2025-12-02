@@ -4,7 +4,7 @@
 # Project Name: Ascent/Descent Modeling
 #
 # Function Name: drag_force_f
-# File Name: drag_force_f.m
+# File Name: drag_force_f.py
 #
 # Contributors: Jack Triglianos, Samuel Landers
 # Date Created: 11/??/2025

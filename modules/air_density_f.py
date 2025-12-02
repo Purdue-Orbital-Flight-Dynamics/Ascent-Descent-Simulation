@@ -4,7 +4,7 @@
 # Project Name: Ascent/Descent Modeling
 #
 # Function Name: air_density_f
-# File Name: air_density_f.m
+# File Name: air_density_f.py
 #
 # Contributors: Cayden Varno, Jack Triglianos, Samuel Landers
 # Date Created: 10/??/2025
