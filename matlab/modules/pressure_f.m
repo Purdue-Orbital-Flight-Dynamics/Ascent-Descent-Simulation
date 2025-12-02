@@ -1,5 +1,4 @@
 function [pressure] = pressure_f(altitude_z, temperature_calculated, temperature_initial, lapse_rate)
-altitude = geometric_to_geopotential_f(altitude_z);
 %************************************************************************
 % Purdue Orbital, Flight Dynamics
 %
@@ -35,6 +34,7 @@ altitude = geometric_to_geopotential_f(altitude_z);
 %
 %************************************************************************
 
+altitude = geometric_to_geopotential_f(altitude_z);
 GAS_CONSTANT = 287; % J/(kg·K)
 G_0 = 9.80665; % m/s^2
 
