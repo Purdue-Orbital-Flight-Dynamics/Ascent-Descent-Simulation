@@ -6,7 +6,7 @@ function volume = volume_balloon_f(altitude, helium_mass)
 % Project Name: Ascent Modelling
 % 
 % Function Name: volume_balloon_f
-% File Name: volume_balloon_f
+% File Name: volume_balloon_f.m
 %
 % Contributors: Aanand Shah
 % Date Created: 10/??/2025

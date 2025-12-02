@@ -6,7 +6,7 @@ function [helium_mass] = helium_mass_f(altitude, net_buoyancy_force)
 % Project Name: Ascent Modeling
 % 
 % Function Name: helium_mass_f
-% File Name: helium_mass_f
+% File Name: helium_mass_f.m
 %
 % Contributors: Garion Cheng, Eric Umminger, Jack Triglianos, Samuel Landers
 % Date Created: 10/??/2025

@@ -5,8 +5,8 @@ function [temperature, initial_temperature, slope_variable] = temperature_f(alti
 %
 % Project: Ascent Modeling
 % 
-% Function Name: temperature
-% File Name: temperature.m
+% Function Name: temperature_f
+% File Name: temperature_f.m
 %
 % Contributors: Eric Umminger, Cayden Varno, Garion Cheng
 % Date Started: 10/27/2025

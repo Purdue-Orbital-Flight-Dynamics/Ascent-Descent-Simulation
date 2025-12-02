@@ -6,7 +6,7 @@ function [system_mass, helium_mass] = system_mass_f(initial_altitude, initial_bu
 % Project Name: Ascent Modeling
 % 
 % Function Name: system_mass_f
-% File Name: system_mass_f
+% File Name: system_mass_f.m
 %
 % Contributors: Sam Landers
 % Date Created: 10/??/2025

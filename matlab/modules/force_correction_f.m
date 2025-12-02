@@ -6,7 +6,7 @@ function [correction_force_N] = force_correction_f(helium_mass_kg, position_m)
 % Project Name: Ascent Modeling
 % 
 % Function Name: force_correction_f
-% File Name: force_correction_f
+% File Name: force_correction_f.m
 %
 % Contributors: Eric Umminger
 % Date Created: 12/1/2025

@@ -6,7 +6,7 @@ function geopotential_altitude = geometric_to_geopotential_f(geometric_altitude)
 % Project Name: Ascent Modeling
 % 
 % Function Name: geometric_to_geopotential_f
-% File Name: geometric_to_geopotential_f
+% File Name: geometric_to_geopotential_f.m
 %
 % Contributors: Cayden
 % Date Created: 10/??/2025
