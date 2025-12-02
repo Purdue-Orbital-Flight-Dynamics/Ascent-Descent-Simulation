@@ -81,14 +81,14 @@ while ascent_rate_mps < target_ascent_rate_mps && ...
 
         drag_force_N    = drag_force_f(velocity_mps, helium_mass_kg, position_m); % [N]
         gravity_force_N = gravity_force_f(position_m, total_mass_kg);             % [N]
-        gravity_acceleration_mps2 = gravity_acceleration_f(position_m);           % [m/s^s]
+        correction_force_N = force_correction_f(helium_mass_kg, position_m);      % [N]
 
         net_force_N = buoyant_force_N - drag_force_N - gravity_force_N;           % [N]
         % fprintf("    Net Force: %.3f N\n", net_force_N)
 
         % Save FIRST net force only (for this helium mass)
         if step_index == 1
-            gage_force = buoyant_force_N - helium_mass_kg * gravity_acceleration_mps2;   % overwrite every run
+            gage_force = buoyant_force_N - correction_force_N;   % overwrite every run
         end
 
         % Update state
