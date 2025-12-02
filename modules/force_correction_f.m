@@ -22,7 +22,7 @@ function [correction_force_N] = force_correction_f(helium_mass_kg, position_m)
 % - position_m: force measured from force meter, in Newtons, positive
 %
 % Output variables: 
-% - helium_mass: helium mass, in kilograms, positive
+% - correction_force_N: correction force, Newtons, positive
 % 
 %************************************************************************
 
