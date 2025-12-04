@@ -27,6 +27,12 @@ from modules.drag_force_f import drag_force_f
 from modules.gravity_force_f import gravity_force_f
 from modules.force_correction_f import force_correction_f
 
+print('***********************************************************\n\n' \
+'INSTRUCTIONS\n\nStarting altitude must be greater than or equal to zero.\n' \
+'Burst altitude must be less than or equal to 100 km.\n' \
+'Burst altitude must be larger than starting altitude.\n\n' \
+'***********************************************************\n\n')
+
 time_step_s = 0.01   # [s] integration time step
 
 burst_altitude_m = float(input("Burst Altitude [m]: "))           # [m]
