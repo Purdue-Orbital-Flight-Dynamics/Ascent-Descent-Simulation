@@ -46,8 +46,10 @@ burst_altitude_m = float(input("Burst Altitude [m]: "))           # [m]
 start_altitude_m = float(input("Starting Altitude [m]: "))        # [m]
 target_ascent_rate_mps = float(input("Desired Ascent Rate [m/s]: "))  # [m/s]
 
-if start_altitude_m < 0 or burst_altitude_m <= start_altitude_m or target_ascent_rate_mps <= 0:
+if start_altitude_m < 0 or burst_altitude_m <= start_altitude_m or target_ascent_rate_mps <= 0 or burst_altitude_m > 100000:
     print('\n\nYour dumbass can\'t read instructions.\n\nTry again.')
+    if random.random() < 0.04:
+        print('\n\n\nRetard.\n')
 else:
             
     
