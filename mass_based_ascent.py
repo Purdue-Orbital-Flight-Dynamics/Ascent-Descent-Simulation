@@ -33,9 +33,9 @@ print('\n***********************************************************\n\n' \
 'INSTRUCTIONS\n\nStarting altitude must be greater than or equal to zero.\n' \
 'Burst altitude must be less than or equal to 100 km.\n' \
 'Burst altitude must be larger than starting altitude.\n' \
-'Desired ascent rate must be greater than 0.')
+'Desired ascent rate must be greater than 0.\n')
     
-if random.random() < 0.1:
+if random.random() < 0.04:
     print('\nI will tickle your tonsils if you break this code.\n\n')
 
 print('***********************************************************\n')
@@ -47,7 +47,7 @@ start_altitude_m = float(input("Starting Altitude [m]: "))        # [m]
 target_ascent_rate_mps = float(input("Desired Ascent Rate [m/s]: "))  # [m/s]
 
 if start_altitude_m < 0 or burst_altitude_m <= start_altitude_m or target_ascent_rate_mps <= 0:
-    print('\n\nYour dumbass cant read instructions\n\nTry again')
+    print('\n\nYour dumbass can\'t read instructions.\n\nTry again.')
 else:
             
     
