@@ -42,7 +42,7 @@ def pressure_f(altitude_z, temperature_calculated, temperature_initial, lapse_ra
     GAS_CONSTANT = 287  # J/(kg·K)
     G_0 = 9.80665       # m/s^2
 
-    if altitude < 11100:  # first gradient region
+    if altitude < 11000:  # first gradient region
         pressure_initial = 1.01325e3  # mbar
         pressure_layer = pressure_initial * (temperature_calculated / temperature_initial) ** (-G_0 / (lapse_rate * GAS_CONSTANT))  # mbar
 
