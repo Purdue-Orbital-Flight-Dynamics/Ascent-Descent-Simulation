@@ -18,8 +18,11 @@ import random
 #   rate between a starting altitude and a specified burst altitude.
 #
 #   First checks whether a defined maximum helium mass is sufficient.
-#   If so, performs a binary search on helium mass to converge on the
-#   required ascent rate within a specified tolerance.
+#   If not sufficient, evaluates and reports the maximum ascent rate
+#   possible under the imposed helium mass limit.
+#
+#   If sufficient, performs a binary search on helium mass to converge
+#   on the required ascent rate within a specified tolerance.
 #
 # References:
 #######################################################################
@@ -135,13 +138,19 @@ def simulate_ascent_rate(helium_mass_kg):
 
 max_rate_mps, max_gage_force, max_failed = simulate_ascent_rate(MAX_HELIUM_MASS_KG)
 
+# If maximum helium mass cannot meet the target ascent rate,
+# print the maximum ascent rate possible (under the limit) and exit.
 if max_failed or max_rate_mps < target_ascent_rate_mps:
 
     print("\nMaximum helium mass is insufficient for these conditions.\n")
     print("Maximum helium mass [kg]:")
     print(f"{MAX_HELIUM_MASS_KG:.4f}")
-    print("Achieved ascent rate [m/s]:")
+
+    print("Maximum achieved ascent rate [m/s] under limit:")
     print(f"{max_rate_mps:.4f}")
+
+    print("Initial net force at maximum mass [N]:")
+    print(f"{max_gage_force:.4f}")
 
     raise SystemExit
 
