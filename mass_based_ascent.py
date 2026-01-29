@@ -65,7 +65,7 @@ if start_altitude_m < 0 or burst_altitude_m <= start_altitude_m or \
 CONSTANT_MASS_KG    = 8.8     # [kg] payload + structure
 MAX_HELIUM_MASS_KG = 50.0    # [kg] maximum allowable helium mass
 
-RATE_DECIMALS = 4            # [-] ascent rate matching precision
+RATE_DECIMALS = 5            # [-] ascent rate matching precision
 MAX_BINARY_ITERS = 80        # [-] safety limit on binary search iterations
 
 #######################################################################
