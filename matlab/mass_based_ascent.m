@@ -122,3 +122,5 @@ disp(helium_mass_kg)
 
 disp("Initial net force for target rate [N]:")
 disp(gage_force)
+
+graphing_f(helium_mass_kg, start_altitude_m, burst_altitude_m, total_mass_kg);
