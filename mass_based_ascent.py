@@ -31,6 +31,7 @@ from modules.buoyant_force_f import buoyant_force_f
 from modules.drag_force_f import drag_force_f
 from modules.gravity_force_f import gravity_force_f
 from modules.force_correction_f import force_correction_f
+from modules.simulate_ascent_motion_f import simulate_ascent_motion_f
 
 # Instructions
 print('\n***********************************************************\n\n' \
@@ -202,3 +203,30 @@ print(f"{best_gage_N:.4f}")
 
 print("Final achieved ascent rate [m/s]:")
 print(f"{best_rate_mps:.4f}")
+
+
+#######################################################################
+# Detailed Ascent Profile for Final Helium Mass
+#######################################################################
+
+PLOT_LOG_SCALE = False   # [-] set True for log-scale plots
+
+ascent_profile_results = simulate_ascent_motion_f(
+    helium_mass_kg   = best_mass_kg,        # [kg]
+    start_altitude_m = start_altitude_m,    # [m]
+    max_altitude_m   = burst_altitude_m,    # [m]
+    time_step_s      = time_step_s,          # [s]
+    constant_mass_kg = CONSTANT_MASS_KG,    # [kg]
+    make_plots       = True,                 # [-]
+    log_scale_plots  = PLOT_LOG_SCALE        # [-]
+)
+
+# Sanity check output
+if ascent_profile_results["had_error"]:
+    print("\nWARNING: Detailed ascent simulation encountered an issue.")
+    print("Reason:")
+    print(ascent_profile_results["error_reason"])
+else:
+    print("\nDetailed ascent simulation completed successfully.")
+    print("Mean ascent rate from profile [m/s]:")
+    print(f"{ascent_profile_results['mean_ascent_rate_mps']:.4f}")
