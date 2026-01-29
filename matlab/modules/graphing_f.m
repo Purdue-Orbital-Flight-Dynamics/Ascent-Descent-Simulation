@@ -71,11 +71,7 @@ while position_m < burst_altitude_m
     position_history_m(step_index)       = position_m;
     velocity_history_mps(step_index)     = velocity_mps;
     acceleration_history_mps2(step_index) = acceleration_mps2;
-    if step_index == 1
-        time_history_s(step_index)       = 0;
-    else
-    time_history_s(step_index)           = time_history_s(step_index - 1) + time_step_s;
-    end
+    time_history_s(step_index) = (step_index - 1) * time_step_s;
 
     if net_force_N <= 0
         fprintf("Net force became non-positive after %d steps\n", step_index);
@@ -87,30 +83,30 @@ while position_m < burst_altitude_m
 end
 
 figure(1)
-plot(position_history_m, time_history_s, 'Color', 'g')
+plot(time_history_s, position_history_m, 'Color', 'g')
 title("Position vs. Time")
 xlabel("Time [s]")
 ylabel("Position [m]")
 grid on
 xlim([0, max(time_history_s)])
-ylim([0, max(position_history_m)])
+ylim([0, max(position_history_m + 10)])
 
 figure(2)
-plot(velocity_history_mps, time_history_s, 'Color', 'b')
+plot(time_history_s, velocity_history_mps, 'Color', 'b')
 title("Velocity vs. Time")
 xlabel("Time [s]")
 ylabel("Velocity [m/s]")
 grid on
 xlim([0,max(time_history_s)])
-ylim([0, max(velocity_history_mps)])
+ylim([0, max(velocity_history_mps + 5)])
 
 figure(3)
-plot(acceleration_history_mps2, time_history_s, 'Color', 'r')
+plot(time_history_s, acceleration_history_mps2, 'Color', 'r')
 title("Acceleration vs. Time")
 xlabel("Time [s]")
 ylabel("Acceleration [m/s^2]")
 grid on
 xlim([0,max(time_history_s)])
-ylim([0, max(acceleration_history_mps2)])
+ylim([0, max(acceleration_history_mps2 + 5)])
 
 fprintf("Three graphs generated.\n")
