@@ -92,6 +92,8 @@ title("Position vs. Time")
 xlabel("Time [s]")
 ylabel("Position [m]")
 grid on
+xlim([0, max(time_history_s)])
+ylim([0, max(position_history_m)])
 
 figure(2)
 plot(velocity_history_mps, time_history_s, 'Color', 'b')
@@ -99,6 +101,8 @@ title("Velocity vs. Time")
 xlabel("Time [s]")
 ylabel("Velocity [m/s]")
 grid on
+xlim([0,max(time_history_s)])
+ylim([0, max(velocity_history_mps)])
 
 figure(3)
 plot(acceleration_history_mps2, time_history_s, 'Color', 'r')
@@ -106,5 +110,7 @@ title("Acceleration vs. Time")
 xlabel("Time [s]")
 ylabel("Acceleration [m/s^2]")
 grid on
+xlim([0,max(time_history_s)])
+ylim([0, max(acceleration_history_mps2)])
 
 fprintf("Three graphs generated.\n")
