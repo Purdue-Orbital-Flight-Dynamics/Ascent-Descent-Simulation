@@ -50,13 +50,17 @@ def pressure_f(altitude_z, temperature_calculated, temperature_initial, lapse_ra
         pressure_initial = 2.2632e2  # mbar
         pressure_layer = pressure_initial * math.exp(-(G_0 / (GAS_CONSTANT * 216.65)) * (altitude - 11000))  # mbar
 
-    elif altitude < 47000:  # second gradient region
-        pressure_initial = 5.4748 * 10  # mbar
+    elif altitude < 32000: # second gradient region a
+        pressure_initial = 54.7489  # mbar
+        pressure_layer = pressure_initial * (temperature_calculated / temperature_initial) ** (-G_0 / (lapse_rate * GAS_CONSTANT))  # mbar
+
+    elif altitude < 47000:  # second gradient region b
+        pressure_initial = 8.68019 # mbar
         pressure_layer = pressure_initial * (temperature_calculated / temperature_initial) ** (-G_0 / (lapse_rate * GAS_CONSTANT))  # mbar
 
     elif altitude < 51000:  # second isothermal (pause) region
         pressure_initial = 1.1090  # mbar
-        pressure_layer = pressure_initial * math.exp(-(G_0 / (GAS_CONSTANT * 270.65)) * (altitude - 11000))  # mbar
+        pressure_layer = pressure_initial * math.exp(-(G_0 / (GAS_CONSTANT * 270.65)) * (altitude - 47000))  # mbar
 
     else:
         # Optional: handle out-of-range altitudes; here we simply set NaN
