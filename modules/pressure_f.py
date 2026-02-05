@@ -60,7 +60,7 @@ def pressure_f(altitude_z, temperature_calculated, temperature_initial, lapse_ra
 
     elif altitude < 51000:  # second isothermal (pause) region
         pressure_initial = 1.1090  # mbar
-        pressure_layer = pressure_initial * math.exp(-(G_0 / (GAS_CONSTANT * 270.65)) * (altitude - 11000))  # mbar
+        pressure_layer = pressure_initial * math.exp(-(G_0 / (GAS_CONSTANT * 270.65)) * (altitude - 47000))  # mbar
 
     else:
         # Optional: handle out-of-range altitudes; here we simply set NaN
