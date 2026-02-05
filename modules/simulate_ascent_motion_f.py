@@ -204,7 +204,7 @@ def simulate_ascent_motion_f(helium_mass_kg, start_altitude_m, max_altitude_m,
 
     if make_plots and len(results["time_s"]) > 0:
 
-        # Position
+        # Position vs Time
         plt.figure()
         plt.plot(results["time_s"], results["position_m"])
         plt.xlabel("Time [s]")
@@ -215,7 +215,7 @@ def simulate_ascent_motion_f(helium_mass_kg, start_altitude_m, max_altitude_m,
         if log_scale_plots:
             plt.xscale("log")
 
-        # Velocity
+        # Velocity vs Time
         plt.figure()
         plt.plot(results["time_s"], results["velocity_mps"])
         plt.xlabel("Time [s]")
@@ -226,12 +226,34 @@ def simulate_ascent_motion_f(helium_mass_kg, start_altitude_m, max_altitude_m,
         if log_scale_plots:
             plt.xscale("log")
 
-        # Acceleration
+        # Acceleration vs Time
         plt.figure()
         plt.plot(results["time_s"], results["acceleration_mps2"])
         plt.xlabel("Time [s]")
         plt.ylabel("Acceleration [m/s^2]")
         plt.title(f"Acceleration vs Time (He Mass = {helium_mass_kg:.4f} kg)")
+        plt.grid(True)
+
+        if log_scale_plots:
+            plt.xscale("log")
+
+        # Velocity vs Position
+        plt.figure()
+        plt.plot(results["position_m"], results["velocity_mps"])
+        plt.xlabel("Position [m]")
+        plt.ylabel("Velocity [m/s]")
+        plt.title(f"Velocity vs Position (He Mass = {helium_mass_kg:.4f} kg)")
+        plt.grid(True)
+
+        if log_scale_plots:
+            plt.xscale("log")
+
+        # Acceleration vs Position
+        plt.figure()
+        plt.plot(results["position_m"], results["acceleration_mps2"])
+        plt.xlabel("Position [m]")
+        plt.ylabel("Acceleration [m/s^2]")
+        plt.title(f"Acceleration vs Position (He Mass = {helium_mass_kg:.4f} kg)")
         plt.grid(True)
 
         if log_scale_plots:
