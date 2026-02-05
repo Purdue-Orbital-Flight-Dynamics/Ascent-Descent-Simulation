@@ -179,7 +179,7 @@ elif altitude_H < 47000:  # second gradient region b
 
 elif altitude_H < 51000:  # second isothermal (pause) region
     pressure_initial = 1.1090  # mbar
-    pressure_layer = pressure_initial * math.exp(-(G_0 / (GAS_CONSTANT * 270.65)) * (altitude_H - 11000))  # mbar
+    pressure_layer = pressure_initial * math.exp(-(G_0 / (GAS_CONSTANT * 270.65)) * (altitude_H - 47000))  # mbar
 
 else:
     # Optional: handle out-of-range altitudes; here we simply set NaN
@@ -193,5 +193,5 @@ density = (pressure * molecular_weight) / (8.31432 * temperature)  # kg/m^3
 pressure = pressure / 100
 
 print(f"Temperature [K]:           {temperature:.4f}")
-print(f"Pressure [mbar]:           {pressure:.4e}")
-print(f"Air Density [kg/m^3]:      {density:.4e}")
+print(f"Pressure [mbar]:           {pressure:.5e}")
+print(f"Air Density [kg/m^3]:      {density:.5e}")
