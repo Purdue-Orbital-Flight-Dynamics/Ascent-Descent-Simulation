@@ -209,7 +209,7 @@ print(f"{best_rate_mps:.4f}")
 # Detailed Ascent Profile for Final Helium Mass
 #######################################################################
 
-PLOT_LOG_SCALE = False   # [-] set True for log-scale plots
+PLOT_LOG_SCALE = True   # [-] set True for log-scale plots
 
 ascent_profile_results = simulate_ascent_motion_f(
     helium_mass_kg   = best_mass_kg,        # [kg]

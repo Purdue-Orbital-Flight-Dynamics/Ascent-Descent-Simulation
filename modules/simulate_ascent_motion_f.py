@@ -246,7 +246,7 @@ def simulate_ascent_motion_f(helium_mass_kg, start_altitude_m, max_altitude_m,
         plt.grid(True)
 
         if log_scale_plots:
-            plt.xscale("log")
+            plt.yscale("log")
 
         # Acceleration vs Position
         plt.figure()
@@ -257,7 +257,7 @@ def simulate_ascent_motion_f(helium_mass_kg, start_altitude_m, max_altitude_m,
         plt.grid(True)
 
         if log_scale_plots:
-            plt.xscale("log")
+            plt.yscale("log")
 
         plt.show()
     
