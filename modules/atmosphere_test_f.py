@@ -186,10 +186,12 @@ else:
     pressure_layer = float('nan')  # mbar
 
 # x 100 to put in pascals
-pressure = pressure_layer * 100  # Pa
+pressure = pressure_layer * 100 # Pa
 
-density = (pressure * molecular_weight) / (GAS_CONSTANT * temperature)  # kg/m^3
+density = (pressure * molecular_weight) / (8.31432 * temperature)  # kg/m^3
 
-print("Temperature [K]:           ")
-print("Pressure [Pa]:             ")
-print("Air Density [kg/m^3]:      ")
+pressure = pressure / 100
+
+print(f"Temperature [K]:           {temperature:.4f}")
+print(f"Pressure [mbar]:           {pressure:.4e}")
+print(f"Air Density [kg/m^3]:      {density:.4e}")
