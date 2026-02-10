@@ -10,8 +10,8 @@ import numpy as np
 #Garion Cheng: 2/4/2026 Converted to Python
 
 from modules.drag_force_descent_f import drag_force_descent_f
-from modules.gravitational_force_f import gravitational_force_f
-from modules.system_mass_f import system_mass_f
+from modules.gravity_force_f import gravity_force_f
+from modules.system_m_f import system_mass_f
 
 # --- Inputs
 burst_altitude = float(input("Enter balloon burst altitude (m)    : "))
@@ -47,7 +47,7 @@ while position > ground_level:
 
     # --- Forces
     drag_force = drag_force_descent_f(velocity, position)
-    gravitational_force = gravitational_force_f(position, total_mass)
+    gravitational_force = gravity_force_f(position, total_mass)
     net_force = drag_force + gravitational_force
 
     # --- Update state
