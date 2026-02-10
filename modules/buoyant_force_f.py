@@ -1,4 +1,4 @@
-#######################################################################
+########################################################################
 # Purdue Orbital, Flight Dynamics
 #
 # Project Name: Ascent/Descent Modeling
@@ -6,42 +6,42 @@
 # Function Name: buoyant_force_f
 # File Name: buoyant_force_f.py
 #
-# Contributors: Aanand Shah, Jack Triglianos
-# Date Created: 11/??/2025
-# Last Updated: 11/17/2025
+# Contributors: Purdue Orbital Flight Dynamics Team
+# Date Created: Unknown
+# Last Updated: 02/09/2026
 #
 # Function Description:
-#   Computes the buoyant force acting on the balloon using Archimedes'
-#   principle. Assumes ideal gas behavior and equilibrium between internal
-#   and external pressure and temperature.
+#   Computes buoyant force magnitude (Archimedes principle):
+#       F_b = rho_air * V_balloon * g
 #
-# References: 
+# Notes:
+#   - Returns magnitude (always non-negative).
+#
+# References:
+#   None
 #
 # Input variables:
-# - altitude: geometric altitude, m, positive
-# - helium_mass: mass of helium in the balloon, kg, positive
+# - altitude_m: geometric altitude, m, non-negative
+# - helium_mass_kg: helium mass in balloon, kg, non-negative
+# - atm: atmosphere dict (SI) from modules.atmosphere.atmosphere_m, must include:
+#       - rho_kgm3 (kg/m^3)
 #
 # Output variables:
-# - F_buoyant: buoyant force on the balloon, N
+# - buoyant_force_N: buoyant force magnitude, N, non-negative
 #
-#######################################################################
+########################################################################
 
-from modules.air_density_f import air_density_f
+from __future__ import annotations
+
 from modules.gravity_acceleration_f import gravity_acceleration_f
 from modules.volume_balloon_f import volume_balloon_f
 
-def buoyant_force_f(altitude, helium_mass):
 
-    # Compute density
-    air_density = air_density_f(altitude)  # in kg/m^3
+def buoyant_force_f(altitude_m: float, helium_mass_kg: float, *, atm: dict) -> float:
+    """Return buoyant force magnitude (N)."""
+    air_density_kgm3 = float(atm["rho_kgm3"])  # [kg/m^3]
+    gravity_mps2 = gravity_acceleration_f(altitude_m)  # [m/s^2]
+    volume_m3 = volume_balloon_f(altitude_m, helium_mass_kg, atm=atm)  # [m^3]
 
-    # Compute gravitational acceleration
-    gravity_acceleration = gravity_acceleration_f(altitude)  # in m/s^2
-
-    # Compute balloon volume
-    volume = volume_balloon_f(altitude, helium_mass)  # in m^3
-
-    # Buoyant force (Archimedes)
-    buoyant_force = (air_density) * volume * gravity_acceleration  # in N
-
-    return buoyant_force
+    buoyant_force_N = air_density_kgm3 * volume_m3 * gravity_mps2  # [N]
+    return float(buoyant_force_N)

@@ -6,46 +6,44 @@
 # Function Name: drag_force_f
 # File Name: drag_force_f.py
 #
-# Contributors: Jack Triglianos, Samuel Landers
-# Date Created: 11/??/2025
-# Last Updated: 11/17/2025
+# Contributors: Purdue Orbital Flight Dynamics Team
+# Date Created: Unknown
+# Last Updated: 02/09/2026
 #
 # Function Description:
-#   Computes the drag force acting on the balloon assuming the balloon
-#   behaves as a sphere with a typical drag coefficient. Uses the standard
-#   drag equation and atmospheric density as a function of altitude.
+#   Computes aerodynamic drag magnitude on the balloon using:
+#       D = 0.5 * C_D * rho * A * v^2
+#
+# Notes:
+#   - Returns magnitude (always non-negative). Direction must be applied by
+#     the calling code based on velocity sign.
 #
 # References:
-#   NASA Glenn Research Center. (n.d.). *Drag of a sphere*. 
-#       https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/drag-of-a-sphere/
-#   NASA Glenn Research Center. (n.d.). *Drag coefficient*.
-#       https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/drag-coefficient/
+#   None
 #
 # Input variables:
-# - velocity: descent or ascent velocity of balloon, m/s, magnitude varies
-# - helium_mass: mass of helium inside balloon, kg, positive
-# - altitude: geometric altitude above sea level, m, positive
+# - velocity_mps: vertical velocity, m/s, sign varies
+# - helium_mass_kg: helium mass in balloon, kg, non-negative
+# - altitude_m: geometric altitude, m, non-negative
+# - atm: atmosphere dict (SI) from modules.atmosphere.atmosphere_m, must include:
+#       - rho_kgm3 (kg/m^3)
 #
 # Output variables:
-# - drag_force: aerodynamic drag force acting on balloon, N
+# - drag_force_N: drag force magnitude, N, non-negative
 #
 ########################################################################
 
-from modules.air_density_f import air_density_f
+from __future__ import annotations
+
 from modules.balloon_cross_sectional_area_f import balloon_cross_sectional_area_f
 
-def drag_force_f(velocity, helium_mass, altitude):
+DRAG_COEFF_SPHERE = 0.47  # [-] representative sphere drag coefficient
 
-    # Air density at altitude
-    air_density = air_density_f(altitude)  # kg/m^3
 
-    # Balloon cross-sectional area
-    cross_sectional_area = balloon_cross_sectional_area_f(altitude, helium_mass)  # m^2
+def drag_force_f(velocity_mps: float, helium_mass_kg: float, altitude_m: float, *, atm: dict) -> float:
+    """Return drag magnitude in newtons."""
+    air_density_kgm3 = float(atm["rho_kgm3"])  # [kg/m^3]
+    area_m2 = balloon_cross_sectional_area_f(altitude_m, helium_mass_kg, atm=atm)  # [m^2]
 
-    # Drag coefficient (sphere approximation)
-    DRAG_COEFFICIENT = 0.47  # dimensionless
-
-    # Drag force
-    drag_force = 0.5 * DRAG_COEFFICIENT * air_density * cross_sectional_area * velocity**2  # N
-
-    return drag_force
+    drag_force_N = 0.5 * DRAG_COEFF_SPHERE * air_density_kgm3 * area_m2 * (velocity_mps ** 2)  # [N]
+    return float(drag_force_N)

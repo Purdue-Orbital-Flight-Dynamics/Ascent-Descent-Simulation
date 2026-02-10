@@ -1,43 +1,47 @@
 ########################################################################
 # Purdue Orbital, Flight Dynamics
-# 
+#
 # Project Name: Ascent Modeling
-# 
+#
 # Function Name: force_correction_f
 # File Name: force_correction_f.py
 #
 # Contributors: Eric Umminger
-# Date Created: 12/1/2025
-# Last Updated: 12/1/2025
+# Date Created: 12/01/2025
+# Last Updated: 02/09/2026
 #
-# Function Description: This function will calculate the force due to the masses
-# of helium, the balloon, the neck system, and other miscellaneous masses.
-# 
-# References: N/A
+# Function Description:
+#   Computes the correction force to convert buoyant force into an initial
+#   gage force during inflation/measurement, accounting for helium mass and
+#   additional attached masses (balloon, neck system, rope slack, etc.):
+#       F_corr = (m_misc + m_He) * g(h)
+#
+# References:
+#   None
 #
 # Input variables:
-# - helium_mass_kg: altitude, in meters, positive
-# - position_m: force measured from force meter, in Newtons, positive
+# - helium_mass_kg: helium mass, kg, non-negative
+# - position_m: geometric altitude, m, non-negative
 #
-# Output variables: 
-# - correction_force_N: correction force, Newtons, positive
-# 
+# Output variables:
+# - correction_force_N: correction force magnitude, N, non-negative
+#
 ########################################################################
+
+from __future__ import annotations
 
 from modules.gravity_acceleration_f import gravity_acceleration_f
 
-def force_correction_f(helium_mass_kg, position_m):
+# NOTE: These are placeholders until measured values are provided.
+BALLOON_MASS_KG = 0.0  # [kg]
+NECK_MASS_KG = 0.0     # [kg] neck closure system only
+ROPE_MASS_KG = 0.0     # [kg] rope slack when inflating balloon
+OTHER_MASS_KG = 0.0    # [kg] any other masses to include
 
-    # Constants
-    BALLOON_MASS_KG = 0  # in kg
-    NECK_MASS_KG = 0     # in kg, neck closure system only
-    ROPE_MASS_KG = 0     # in kg, rope slack when inflating balloon
-    OTHER_MASS_KG = 0    # in kg, any other masses to include
 
-    # Calculations
-    correction_mass_kg = BALLOON_MASS_KG + NECK_MASS_KG + ROPE_MASS_KG + OTHER_MASS_KG + helium_mass_kg  # in kg
-    gravity_acceleration_mps2 = gravity_acceleration_f(position_m)  # in m/s^2
-
-    correction_force_N = correction_mass_kg * gravity_acceleration_mps2  # in N
-
-    return correction_force_N
+def force_correction_f(helium_mass_kg: float, position_m: float) -> float:
+    """Return correction force magnitude (N)."""
+    correction_mass_kg = BALLOON_MASS_KG + NECK_MASS_KG + ROPE_MASS_KG + OTHER_MASS_KG + helium_mass_kg  # [kg]
+    gravity_mps2 = gravity_acceleration_f(position_m)  # [m/s^2]
+    correction_force_N = correction_mass_kg * gravity_mps2  # [N]
+    return float(correction_force_N)

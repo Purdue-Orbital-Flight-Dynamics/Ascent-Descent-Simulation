@@ -6,37 +6,38 @@
 # Function Name: balloon_density_f
 # File Name: balloon_density_f.py
 #
-# Contributors: Aanand Shah, Samuel Landers
-# Date Created: 10/??/2025
-# Last Updated: 11/17/2025
+# Contributors: Purdue Orbital Flight Dynamics Team
+# Date Created: Unknown
+# Last Updated: 02/09/2026
 #
 # Function Description:
-#   Computes the density of helium inside the balloon assuming ideal gas
-#   behavior and equilibrium between internal and external temperature
-#   and pressure.
+#   Computes helium density using the ideal gas law:
+#       rho = (p * M) / (R * T)
+#
+# References:
+#   None
 #
 # Input variables:
-# - altitude: geometric altitude, m, positive
+# - altitude_m: geometric altitude, m, non-negative (unused except for consistency)
+# - atm: atmosphere dict (SI) from modules.atmosphere.atmosphere_m, must include:
+#       - T_K (K)
+#       - p_Pa (Pa)
 #
 # Output variables:
-# - density_b: helium density inside the balloon, kg/m^3, positive
+# - helium_density_kgm3: helium density, kg/m^3, positive
 #
 ########################################################################
 
-from modules.temperature_f import temperature_f
-from modules.pressure_f import pressure_f
+from __future__ import annotations
 
-def balloon_density_f(altitude):
+GAS_CONSTANT = 8.314462618      # [J/(mol*K)]
+HELIUM_MOLAR_MASS = 0.00400261  # [kg/mol]
 
-    # Compute temperature and pressure
-    temperature, temperature_initial, lapse_rate = temperature_f(altitude)  # K, K, K/m
-    pressure = pressure_f(altitude, temperature, temperature_initial, lapse_rate)  # Pa
 
-    # Constants (SI mol-based)
-    GAS_CONSTANT = 8.314462618  # J/(mol·K)
-    HELIUM_MOLAR_MASS = 0.00400261  # kg/mol
+def balloon_density_f(altitude_m: float, *, atm: dict) -> float:
+    """Return helium density (kg/m^3) assuming ideal gas behavior."""
+    temperature_K = float(atm["T_K"])  # [K]
+    pressure_Pa = float(atm["p_Pa"])   # [Pa]
 
-    # Density from ideal gas law
-    density_b = (pressure * HELIUM_MOLAR_MASS) / (GAS_CONSTANT * temperature)  # kg/m^3
-
-    return density_b
+    helium_density_kgm3 = (pressure_Pa * HELIUM_MOLAR_MASS) / (GAS_CONSTANT * temperature_K)  # [kg/m^3]
+    return float(helium_density_kgm3)
