@@ -1,3 +1,4 @@
+# balloon_cross_sectional_area_f.py
 ########################################################################
 # Purdue Orbital, Flight Dynamics
 #
@@ -8,7 +9,7 @@
 #
 # Contributors: Garion Cheng, Samuel Landers
 # Date Created: 10/??/2025
-# Last Updated: 11/17/2025
+# Last Updated: 02/09/2026
 #
 # Function Description:
 #   Computes the cross-sectional area of a high-altitude balloon assuming:
@@ -17,11 +18,14 @@
 #   - Internal pressure equals external pressure
 #   - Internal temperature equals external temperature
 #
-# References: N/A
+# Notes:
+#   - Updated to optionally accept a precomputed `atm` dict from modules.atmosphere.Atmosphere
+#     to avoid recomputing temperature/pressure repeatedly inside the timestep loop.
 #
 # Input variables:
 # - altitude: geometric altitude, meters, positive
 # - helium_mass: mass of helium in the balloon, kilograms, positive
+# - atm: (optional) atmosphere dict (SI) from Atmosphere(...), containing T_K and p_Pa
 #
 # Output variables:
 # - area: balloon cross-sectional area, m^2, positive
@@ -29,25 +33,33 @@
 ########################################################################
 
 import math
-from modules.temperature_f import temperature_f
-from modules.pressure_f import pressure_f
 
-def balloon_cross_sectional_area_f(altitude, helium_mass):
+def balloon_cross_sectional_area_f(altitude_m, helium_mass_kg, *, atm):
+    """Return balloon cross-sectional area (m^2).
 
-    # Calculate temperature and external pressure at altitude
-    temperature, initial_temperature, lapse_rate = temperature_f(altitude)  # K, K, K/m
-    pressure = pressure_f(altitude, temperature, initial_temperature, lapse_rate)  # Pa
+    Parameters
+    ----------
+    altitude_m : float
+        Geometric altitude in meters.
+    helium_mass_kg : float
+        Helium mass in kilograms.
+    atm : dict | None
+        Optional atmosphere dict from modules.atmosphere.Atmosphere(...).
+        Must contain keys: "T_K", "p_Pa".
+    """
 
-    # Calculate amount of helium
-    HELIUM_MOLAR_MASS = 4.00261  # kg/kmol
-    helium_amount = helium_mass / HELIUM_MOLAR_MASS  # kmol
+    # External conditions (assume internal equals external)
+    T = float(atm["T_K"])      # K
+    p = float(atm["p_Pa"])     # Pa
 
-    # Ideal gas law for volume
-    GAS_CONSTANT = 8.314e3  # J/(kmol·K)
-    gas_volume = helium_amount * GAS_CONSTANT * temperature / pressure  # m^3
+    # Amount of helium
+    HELIUM_MOLAR_MASS = 0.00400261  # kg/mol
+    n_mol = helium_mass_kg / HELIUM_MOLAR_MASS  # mol
 
-    # Convert volume to radius, then cross-sectional area
-    radius = (3 * gas_volume / (4 * math.pi)) ** (1/3)  # m
-    area = math.pi * radius**2  # m^2
+    # Ideal gas law for volume: V = n R T / p
+    GAS_CONSTANT = 8.314462618  # J/(mol·K)
+    V = n_mol * GAS_CONSTANT * T / p  # m^3
 
-    return area
+    # Sphere radius and cross-sectional area
+    r = (3.0 * V / (4.0 * math.pi)) ** (1.0 / 3.0)  # m
+    return math.pi * r * r

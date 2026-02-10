@@ -1,36 +1,5 @@
-########################################################################
-# Purdue Orbital, Flight Dynamics
-# 
-# Project Name: Ascent Modelling
-# 
-# Function Name: volume_balloon_f
-# File Name: volume_balloon_f.py
-#
-# Contributors: Aanand Shah
-# Date Created: 10/??/2025
-# Last Updated: 11/17/2025
-#
-# Function Description: This function will calculate the volume of the balloon
-# for a given altitude and helium mass.
-# 
-# References: N/A
-#
-# Input variables:
-# - altitude: geometric altitude, in meters, positive
-#
-# Output variables: 
-# - volume: volume of balloon, in cubic meters, positive
-# 
-########################################################################
-
 from modules.balloon_density_f import balloon_density_f
 
-def volume_balloon_f(altitude, helium_mass):
-
-    # Calculate density
-    density_balloon = balloon_density_f(altitude)  # in kg/m^3
-
-    # Calculate volume
-    volume = helium_mass / density_balloon  # in m^3
-
-    return volume
+def volume_balloon_f(altitude, helium_mass, *, atm):
+    rho_he = balloon_density_f(altitude, atm=atm)
+    return helium_mass / rho_he
