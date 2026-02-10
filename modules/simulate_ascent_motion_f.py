@@ -50,7 +50,7 @@ from __future__ import annotations
 import numpy as np
 import matplotlib.pyplot as plt
 
-from modules.atmosphere import atmosphere_m
+from modules.atmosphere_f import atmosphere_m
 from modules.buoyant_force_f import buoyant_force_f
 from modules.drag_force_f import drag_force_f
 from modules.gravity_force_f import gravity_force_f
