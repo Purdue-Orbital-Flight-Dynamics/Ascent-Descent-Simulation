@@ -8,31 +8,32 @@
 #
 # Contributors: Jack Triglianos, Samuel Landers
 # Date Created: 11/??/2025
-# Last Updated: 11/17/2025
+# Last Updated: 02/09/2026
 #
 # Function Description:
 #   Computes gravitational acceleration at a given geometric altitude using
-#   the inverse square law based on Earth's average radius.
+#   an inverse-square law based on Earth's mean radius:
+#       g(h) = g0 * (R / (R + h))^2
 #
 # References:
-#   vCalc. (n.d.). *Gravity acceleration by altitude*.
+#   vCalc. (n.d.). Gravity acceleration by altitude.
 #   https://www.vcalc.com/wiki/gravity-acceleration-by-altitude
 #
 # Input variables:
-# - altitude: geometric altitude above Earth's surface, m, positive
+# - altitude_m: geometric altitude above Earth's surface, m, non-negative
 #
 # Output variables:
-# - g: gravitational acceleration at altitude, m/s^2, positive
+# - gravity_mps2: gravitational acceleration, m/s^2, positive
 #
 ########################################################################
 
-def gravity_acceleration_f(altitude):
+from __future__ import annotations
 
-    G_0 = 9.80665  # m/s^2, standard gravity at sea level
-    R_EARTH = 6371009  # m, average Earth radius
+STANDARD_GRAVITY_MPS2 = 9.80665   # [m/s^2]
+EARTH_RADIUS_M = 6_371_009.0      # [m] mean Earth radius
 
-    gravity = G_0 * (R_EARTH / (R_EARTH + altitude)) ** 2  # m/s^2
 
-    # THIS RETURNS A MAGNITUDE
-
-    return gravity
+def gravity_acceleration_f(altitude_m: float) -> float:
+    """Return gravitational acceleration magnitude (m/s^2)."""
+    gravity_mps2 = STANDARD_GRAVITY_MPS2 * (EARTH_RADIUS_M / (EARTH_RADIUS_M + altitude_m)) ** 2  # [m/s^2]
+    return float(gravity_mps2)
