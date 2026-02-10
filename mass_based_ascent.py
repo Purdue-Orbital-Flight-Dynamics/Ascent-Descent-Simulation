@@ -3,28 +3,11 @@ import random
 
 #######################################################################
 # Purdue Orbital, Flight Dynamics
-#
 # Project Name: Ascent/Descent Modeling
-#
 # Script Name: mass_based_ascent
-# File Name: mass_based_ascent.m
-#
 # Contributors: Cayden Varno
 # Date Created: 11/20/2025
 # Last Updated: 01/28/2026
-#
-# Script Description:
-#   Determines the helium mass required to achieve a target mean ascent
-#   rate between a starting altitude and a specified burst altitude.
-#
-#   First checks whether a defined maximum helium mass is sufficient.
-#   If not sufficient, evaluates and reports the maximum ascent rate
-#   possible under the imposed helium mass limit.
-#
-#   If sufficient, performs a binary search on helium mass to converge
-#   on the required ascent rate within a specified tolerance.
-#
-# References:
 #######################################################################
 
 from modules.buoyant_force_f import buoyant_force_f
@@ -32,6 +15,10 @@ from modules.drag_force_f import drag_force_f
 from modules.gravity_force_f import gravity_force_f
 from modules.force_correction_f import force_correction_f
 from modules.simulate_ascent_motion_f import simulate_ascent_motion_f
+
+# NEW: import the new Atmosphere (raw SI dict) explicitly (no wildcard import)
+from modules.atmosphere import Atmosphere
+
 
 # Instructions
 print('\n***********************************************************\n\n' \
@@ -47,9 +34,9 @@ print('***********************************************************\n')
 
 time_step_s = 0.1   # [s] integration time step
 
-burst_altitude_m = float(input("Burst Altitude [m]: "))           # [m]
-start_altitude_m = float(input("Starting Altitude [m]: "))        # [m]
-target_ascent_rate_mps = float(input("Desired Ascent Rate [m/s]: "))  # [m/s]
+burst_altitude_m = float(input("Burst Altitude [m]: "))                # [m]
+start_altitude_m = float(input("Starting Altitude [m]: "))             # [m]
+target_ascent_rate_mps = float(input("Desired Ascent Rate [m/s]: "))   # [m/s]
 
 if start_altitude_m < 0 or burst_altitude_m <= start_altitude_m or \
    target_ascent_rate_mps <= 0 or burst_altitude_m > 100000:
@@ -64,10 +51,24 @@ if start_altitude_m < 0 or burst_altitude_m <= start_altitude_m or \
 #######################################################################
 
 CONSTANT_MASS_KG    = 8.8     # [kg] payload + structure
-MAX_HELIUM_MASS_KG = 50.0    # [kg] maximum allowable helium mass
+MAX_HELIUM_MASS_KG = 50.0     # [kg] maximum allowable helium mass
 
 RATE_DECIMALS = 5            # [-] ascent rate matching precision
 MAX_BINARY_ITERS = 80        # [-] safety limit on binary search iterations
+
+
+#######################################################################
+# Helper: compute atmosphere dict at current altitude
+#######################################################################
+
+def atmosphere_at_position(position_m):
+    """
+    Uses new Atmosphere() to get raw SI properties at current altitude.
+    Atmosphere expects km; this script uses meters.
+    """
+    alt_km = position_m / 1000.0
+    return Atmosphere(alt_geom=alt_km)  # dict with T_K, p_Pa, rho_kgm3, a_ms, mu_kgms, nu_m2s, etc.
+
 
 #######################################################################
 # Ascent Simulation Function
@@ -96,16 +97,49 @@ def simulate_ascent_rate(helium_mass_kg):
 
     while position_m < burst_altitude_m:
 
+        # NEW: compute atmospheric properties at this step
+        atm = atmosphere_at_position(position_m)
+
         # Compute buoyant force safely
         try:
-            buoyant_force_N = buoyant_force_f(position_m, helium_mass_kg)
+            # Prefer upgraded module signature: buoyant_force_f(position_m, helium_mass_kg, atm=atm)
+            try:
+                buoyant_force_N = buoyant_force_f(position_m, helium_mass_kg, atm=atm)
+            except TypeError:
+                buoyant_force_N = buoyant_force_f(position_m, helium_mass_kg)
         except Exception:
             had_error = True
             break
 
-        drag_force_N       = drag_force_f(velocity_mps, helium_mass_kg, position_m)
-        gravity_force_N    = gravity_force_f(position_m, total_mass_kg)
-        correction_force_N = force_correction_f(helium_mass_kg, position_m)
+        # Drag force
+        try:
+            try:
+                drag_force_N = drag_force_f(velocity_mps, helium_mass_kg, position_m, atm=atm)
+            except TypeError:
+                drag_force_N = drag_force_f(velocity_mps, helium_mass_kg, position_m)
+        except Exception:
+            had_error = True
+            break
+
+        # Gravity force
+        try:
+            try:
+                gravity_force_N = gravity_force_f(position_m, total_mass_kg, atm=atm)
+            except TypeError:
+                gravity_force_N = gravity_force_f(position_m, total_mass_kg)
+        except Exception:
+            had_error = True
+            break
+
+        # Correction force
+        try:
+            try:
+                correction_force_N = force_correction_f(helium_mass_kg, position_m, atm=atm)
+            except TypeError:
+                correction_force_N = force_correction_f(helium_mass_kg, position_m)
+        except Exception:
+            had_error = True
+            break
 
         net_force_N = buoyant_force_N - drag_force_N - gravity_force_N
 
@@ -133,6 +167,7 @@ def simulate_ascent_rate(helium_mass_kg):
 
     return mean_ascent_rate_mps, gage_force, False
 
+
 #######################################################################
 # Maximum Helium Mass Check
 #######################################################################
@@ -154,6 +189,7 @@ if max_failed or max_rate_mps < target_ascent_rate_mps:
     print(f"{max_gage_force:.4f}")
 
     raise SystemExit
+
 
 #######################################################################
 # Binary Search on Helium Mass
@@ -191,6 +227,7 @@ for _ in range(MAX_BINARY_ITERS):
     if (high_mass_kg - low_mass_kg) < 0.5 * 10**(-RATE_DECIMALS):
         break
 
+
 #######################################################################
 # FINAL OUTPUT
 #######################################################################
@@ -212,12 +249,12 @@ print(f"{best_rate_mps:.4f}")
 PLOT_LOG_SCALE = False   # [-] set True for log-scale plots
 
 ascent_profile_results = simulate_ascent_motion_f(
-    helium_mass_kg   = best_mass_kg,        # [kg]
-    start_altitude_m = start_altitude_m,    # [m]
-    max_altitude_m   = burst_altitude_m,    # [m]
+    helium_mass_kg   = best_mass_kg,         # [kg]
+    start_altitude_m = start_altitude_m,     # [m]
+    max_altitude_m   = burst_altitude_m,     # [m]
     time_step_s      = time_step_s,          # [s]
-    constant_mass_kg = CONSTANT_MASS_KG,    # [kg]
-    make_plots       = True,                 # [-]
+    constant_mass_kg = CONSTANT_MASS_KG,     # [kg]
+    make_plots       = False,                 # [-]
     log_scale_plots  = PLOT_LOG_SCALE        # [-]
 )
 
