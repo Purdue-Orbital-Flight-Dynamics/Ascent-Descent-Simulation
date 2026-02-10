@@ -6,6 +6,7 @@ from modules.buoyant_force_f import buoyant_force_f
 from modules.drag_force_f import drag_force_f
 from modules.gravity_force_f import gravity_force_f
 from modules.force_correction_f import force_correction_f
+from modules.simulate_ascent_motion_f import simulate_ascent_motion_f
 
 # ----------------- config -----------------
 TIME_STEP_S = 0.1
@@ -102,6 +103,18 @@ def main():
     print(f"\nMass for target rate [kg]: {best_m:.4f}")
     print(f"Initial net force for target rate [N]: {best_gage:.4f}")
     print(f"Final achieved ascent rate [m/s]: {best_rate:.4f}")
+
+    # NEW: run a full ascent motion simulation + plots using the solved helium mass
+    simulate_ascent_motion_f(
+        helium_mass_kg=best_m,
+        start_altitude_m=start_alt_m,
+        max_altitude_m=burst_alt_m,
+        time_step_s=TIME_STEP_S,
+        constant_mass_kg=CONSTANT_MASS_KG,
+        make_plots=True,
+        log_scale_plots=False,
+        hard_stop_on_nonpositive_net_force=True
+    )
 
 if __name__ == "__main__":
     main()

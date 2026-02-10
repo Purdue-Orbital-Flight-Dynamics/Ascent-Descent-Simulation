@@ -1,5 +1,3 @@
-from modules.atmosphere import Atmosphere
-
 def balloon_density_f(altitude, *, atm):
 
     T = atm["T_K"]
