@@ -199,6 +199,28 @@ def simulate_ascent_motion_f(
         if log_scale_plots:
             plt.xscale("log")
 
+        # Velocity vs Position
+        plt.figure()
+        plt.plot(results["position_m"], results["velocity_mps"])
+        plt.xlabel("Position [m]")
+        plt.ylabel("Velocity [m/s]")
+        plt.title(f"Velocity vs Position (He Mass = {helium_mass_kg:.4f} kg)")
+        plt.grid(True)
+
+        if log_scale_plots:
+            plt.yscale("log")
+
+        # Acceleration vs Position
+        plt.figure()
+        plt.plot(results["position_m"], results["acceleration_mps2"])
+        plt.xlabel("Position [m]")
+        plt.ylabel("Acceleration [m/s^2]")
+        plt.title(f"Acceleration vs Position (He Mass = {helium_mass_kg:.4f} kg)")
+        plt.grid(True)
+
+        if log_scale_plots:
+            plt.yscale("log")
+
         plt.show()
 
     return results
