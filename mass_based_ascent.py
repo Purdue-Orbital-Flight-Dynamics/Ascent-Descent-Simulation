@@ -203,7 +203,7 @@ def main() -> None:
         max_altitude_m=burst_alt_m,
         time_step_s=TIME_STEP_S,
         constant_mass_kg=CONSTANT_MASS_KG,
-        make_plots=True,
+        make_plots=False,
         log_scale_plots=False,
         hard_stop_on_nonpositive_net_force=True,
     )
