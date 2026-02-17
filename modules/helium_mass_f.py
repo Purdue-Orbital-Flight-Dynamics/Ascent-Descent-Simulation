@@ -1,54 +1,50 @@
-from modules.balloon_density_f import balloon_density_f
-from modules.air_density_f import air_density_f
-from modules.gravity_acceleration_f import gravity_acceleration_f
+from modules.atmosphere_f import atmosphere_m
 
-def helium_mass_f(altitude, net_buoyancy_force):
 
-#************************************************************************
-# Purdue Orbital, Flight Dynamics
-# 
-# Project Name: Ascent Modeling
-# 
-# Function Name: helium_mass_f
-# File Name: helium_mass_f.m
-#
-# Contributors: Garion Cheng, Eric Umminger, Jack Triglianos, Samuel Landers
-# Date Created: 10/??/2025
-# Last Updated: 11/17/2025
-#
-# Function Description: This function will calculate the mass of helium given 
-# an altitude and buoyancy force.
-# 
-# References: N/A
-#
-# Input variables:
-# - altitude: altitude, in meters, positive
-# - net_buoyancy_force: force measured from force meter, in Newtons, positive
-#
-# Output variables: 
-# - helium_mass: helium mass, in kilograms, positive
-# 
-#************************************************************************
+def helium_mass_f(altitude: float, net_buoyancy_force: float) -> float:
+    """
+    Calculates helium mass given altitude and net buoyancy force.
 
-    # Calculations
+    Parameters
+    ----------
+    altitude : float
+        Altitude in meters (geometric), positive.
+    net_buoyancy_force : float
+        Net buoyancy force in Newtons, positive.
+
+    Returns
+    -------
+    float
+        Helium mass in kilograms, positive.
+    """
 
     # Other mass
-    BALLOON_MASS = 0 # in kg
-    NECK_MASS = 0 # in kg, neck closure system only
-    ROPE_MASS = 0 # in kg, rope slack when inflating balloon
+    BALLOON_MASS = 0.0  # kg
+    NECK_MASS = 0.0     # kg
+    ROPE_MASS = 0.0     # kg
     OTHER_MASS = BALLOON_MASS + NECK_MASS + ROPE_MASS
 
-    # Densities
-    balloon_density = balloon_density_f(altitude) # in kg/m^3
-    air_density = air_density_f(altitude) # in kg/m^3
+    # Get atmospheric properties at altitude
+    atm = atmosphere_m(altitude, geometric=True, output="dict")
 
-    # Acceleration
-    gravity_acceleration = gravity_acceleration_f(altitude) # in m/s^2
+    air_density = atm["rho_kgm3"]  # kg/m^3
+
+    # Standard gravity used in USSA76 (constant)
+    gravity_acceleration = 9.80665  # m/s^2
+
+    # Helium density approximation using ideal gas law:
+    # ρ = p / (R_specific * T)
+    R_HE = 2077.0  # J/(kg·K), specific gas constant for helium
+    helium_density = atm["p_Pa"] / (R_HE * atm["T_K"])  # kg/m^3
 
     # Other weight
     other_weight = OTHER_MASS * gravity_acceleration
 
     # Helium mass
-    helium_mass = (balloon_density * (net_buoyancy_force + other_weight)) / (gravity_acceleration * (air_density - balloon_density)) # in kg
+    helium_mass = (
+        helium_density * (net_buoyancy_force + other_weight)
+    ) / (
+        gravity_acceleration * (air_density - helium_density)
+    )  # kg
 
     return helium_mass

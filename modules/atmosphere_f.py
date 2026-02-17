@@ -116,7 +116,19 @@ def Atmosphere(alt_geom=None, alt_geopot=None, *, output="dict"):
     mu = MetricViscosity(theta)
 
     if output == "tuple":
-        return (h_geom, h_geopot, T, p, rho, a, mu, theta, p_ratio, rho_ratio)
+        return (
+            h_geom,      # float — geometric altitude in kilometers (km)
+            h_geopot,    # float — geopotential altitude in kilometers (km)
+            T,           # float — temperature in Kelvin (K)
+            p,           # float — pressure in Pascals (Pa)
+            rho,         # float — density in kilograms per cubic meter (kg/m^3)
+            a,           # float — speed of sound in meters per second (m/s)
+            mu,          # float — dynamic viscosity in Pascal-seconds (Pa·s)
+            theta,       # float — temperature ratio (T / T0), dimensionless
+            p_ratio,     # float — pressure ratio (p / p0), dimensionless
+            rho_ratio    # float — density ratio (rho / rho0), dimensionless
+        )
+
 
     return {
         "h_geom_km": h_geom,
