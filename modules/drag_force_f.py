@@ -47,3 +47,12 @@ def drag_force_f(velocity_mps: float, helium_mass_kg: float, altitude_m: float, 
 
     drag_force_N = 0.5 * DRAG_COEFF_SPHERE * air_density_kgm3 * area_m2 * (velocity_mps ** 2)  # [N]
     return float(drag_force_N)
+
+
+def main():
+    from atmosphere_f import atmosphere_m
+    atm = atmosphere_m(100)
+    print(drag_force_f(0, 10, 100, atm=atm))
+
+if __name__ == "__main__":
+    main()

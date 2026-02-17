@@ -78,15 +78,10 @@ while position > ground_level:
         break
 
     # --- Gravity force (must be downward = negative if upward is positive)
-    gravity_force = gravity_force_f(position, total_mass)  # N
-    if gravity_force > 0:
-        gravity_force = -gravity_force
+    gravity_force = -abs(gravity_force_f(position, total_mass))  # N
 
     # --- Drag force (must oppose velocity direction)
-    try:
-        drag_force = drag_force_descent_f(velocity, position, helium_mass)  # N
-    except TypeError:
-        drag_force = drag_force_descent_f(velocity, position)  # N
+    drag_force = drag_force_descent_f(velocity, position, helium_mass)  # N
 
     # If drag function returns magnitude only, enforce correct sign
     if velocity > 0:
