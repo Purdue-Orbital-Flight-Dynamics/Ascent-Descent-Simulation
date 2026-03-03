@@ -31,7 +31,10 @@
 #
 #************************************************************************
 
-import numpy as np
+#import numpy as np
+
+
+import statistics
 
 from modules.drag_force_descent_f import drag_force_descent_f
 from modules.gravity_force_f import gravity_force_f
@@ -39,25 +42,22 @@ from modules.system_m_f import system_mass_f
 
 
 # --- Simulation constants
-DT = 1.0            # time step, seconds
-STOP_STEPS = 1000   # maximum iteration steps, dimensionless
+DT = 0.5            # time step, seconds
+STOP_STEPS = 10000   # maximum iteration steps, dimensionless
 
 
 # --- User inputs (SI units)
 burst_altitude = float(input("Enter balloon burst altitude (m): "))  # m, positive
 ground_level = float(input("Enter ground level (m): "))              # m, positive
 burst_velocity = float(input("Enter velocity at burst (m/s): "))     # m/s, varies
-
+cross_sec_area = float(input("Enter balloon area (m^2): "))
 
 # --- Initial state
 current_time = 0.0            # seconds
 position = burst_altitude     # meters
 velocity = burst_velocity     # m/s
 acceleration = 0.0            # m/s^2
-
-# System mass (kg)
-total_mass, helium_mass = system_mass_f(position, 0)
-
+total_mass = 8.8
 
 # --- Data logging vectors
 time_log = [current_time]     # seconds
@@ -81,7 +81,7 @@ while position > ground_level:
     gravity_force = -abs(gravity_force_f(position, total_mass))  # N
 
     # --- Drag force (must oppose velocity direction)
-    drag_force = drag_force_descent_f(velocity, position, helium_mass)  # N
+    drag_force = drag_force_descent_f(velocity, position, cross_sec_area)  # N
 
     # If drag function returns magnitude only, enforce correct sign
     if velocity > 0:
@@ -93,7 +93,9 @@ while position > ground_level:
 
     # --- Net force
     net_force = gravity_force + drag_force  # N
-
+    
+    print('gravity: ' + str(gravity_force))
+    print('drag: ' + str(drag_force))
     # --- State update (Forward Euler)
     acceleration = net_force / total_mass         # m/s^2
     velocity = velocity + acceleration * DT      # m/s
@@ -105,7 +107,7 @@ while position > ground_level:
     position_log.append(position)
     velocity_log.append(velocity)
     acceleration_log.append(acceleration)
-
+    print(acceleration)
     step_index += 1
 
 
@@ -116,7 +118,7 @@ while position > ground_level:
 # Average descent rate (positive magnitude)
 descent_speeds = [-v for v in velocity_log if v < 0]  # m/s
 if len(descent_speeds) > 0:
-    average_descent_rate = float(np.mean(descent_speeds))  # m/s
+    average_descent_rate = float(statistics.mean(descent_speeds))  # m/s
 else:
     average_descent_rate = 0.0
 

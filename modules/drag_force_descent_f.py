@@ -5,7 +5,7 @@ except ModuleNotFoundError:
     from atmosphere_f import atmosphere_m
     from balloon_cross_sectional_area_f import balloon_cross_sectional_area_f
 
-def drag_force_descent_f(velocity: float, altitude: float, mass: float) -> float:
+def drag_force_descent_f(velocity: float, altitude: float, cross_sec_area: float) -> float:
     """
     Computes the drag force acting on the balloon during descent.
 
@@ -21,13 +21,13 @@ def drag_force_descent_f(velocity: float, altitude: float, mass: float) -> float
     float
         Drag force on balloon (N).
     """
-    print("Vel: ", velocity, altitude, mass)
+    print("Vel: ", velocity, altitude)
     # Get air density from standard atmosphere (geometric altitude in meters)
     atm = atmosphere_m(altitude, geometric=True, output="dict")
     air_density = atm["rho_kgm3"]  # kg/m^3
 
     # Get balloon cross-sectional area
-    cross_sec_area = balloon_cross_sectional_area_f(altitude, mass, atm=atm)  # m^2
+    #cross_sec_area = balloon_cross_sectional_area_f(altitude, mass, atm=atm)  # m^2
 
     # Drag coefficient of balloon/parachute
     DRAG_COEFFICIENT = 1.75  # dimensionless
@@ -40,7 +40,6 @@ def drag_force_descent_f(velocity: float, altitude: float, mass: float) -> float
         * cross_sec_area
         * velocity**2
     )  # N
-
     return drag_force
 
 
