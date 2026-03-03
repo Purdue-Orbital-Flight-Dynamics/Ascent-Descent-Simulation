@@ -35,7 +35,10 @@
 
 from __future__ import annotations
 
-from modules.balloon_cross_sectional_area_f import balloon_cross_sectional_area_f
+try:
+    from modules.balloon_cross_sectional_area_f import balloon_cross_sectional_area_f
+except ModuleNotFoundError:
+    from balloon_cross_sectional_area_f import balloon_cross_sectional_area_f
 
 DRAG_COEFF_SPHERE = 0.47  # [-] representative sphere drag coefficient
 

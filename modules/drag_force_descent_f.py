@@ -1,5 +1,9 @@
-from modules.atmosphere_f import atmosphere_m
-from modules.balloon_cross_sectional_area_f import balloon_cross_sectional_area_f
+try:
+    from modules.atmosphere_f import atmosphere_m
+    from modules.balloon_cross_sectional_area_f import balloon_cross_sectional_area_f
+except ModuleNotFoundError:
+    from atmosphere_f import atmosphere_m
+    from balloon_cross_sectional_area_f import balloon_cross_sectional_area_f
 
 def drag_force_descent_f(velocity: float, altitude: float, mass: float) -> float:
     """
@@ -17,7 +21,7 @@ def drag_force_descent_f(velocity: float, altitude: float, mass: float) -> float
     float
         Drag force on balloon (N).
     """
-
+    print("Vel: ", velocity, altitude, mass)
     # Get air density from standard atmosphere (geometric altitude in meters)
     atm = atmosphere_m(altitude, geometric=True, output="dict")
     air_density = atm["rho_kgm3"]  # kg/m^3
@@ -38,3 +42,11 @@ def drag_force_descent_f(velocity: float, altitude: float, mass: float) -> float
     )  # N
 
     return drag_force
+
+
+def main():
+    pass
+    #go nuts
+
+if __name__ == "__main__":
+    main()
