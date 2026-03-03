@@ -3,8 +3,8 @@
 #
 # Project Name: Ascent/Descent Modeling
 #
-# Script Name: mass_based_ascent
-# File Name: mass_based_ascent.py
+# Script Name: ascent_simulation
+# File Name: ascent_simulation.py
 #
 # Contributors: Purdue Orbital Flight Dynamics Team
 # Date Created: Unknown
@@ -46,6 +46,8 @@ from modules.gravity_force_f import gravity_force_f
 from modules.force_correction_f import force_correction_f
 from modules.simulate_ascent_motion_f import simulate_ascent_motion_f
 
+
+
 # ----------------- configuration constants -----------------
 TIME_STEP_S = 0.1               # [s]
 CONSTANT_MASS_KG = 8.8          # [kg] fixed non-helium mass
@@ -55,6 +57,20 @@ RATE_DECIMALS = 5               # [-] rate comparison precision
 MAX_USSA76_ALT_M = 84_852.0     # [m] 1976 std-atm table ceiling in atmosphere.py
 # -----------------------------------------------------------
 
+def validate_inputs(
+    start_alt_m: float,
+    burst_alt_m: float,
+    target_rate_mps: float,
+) -> str | None:
+    if start_alt_m < 0.0:
+        return "start_alt_m must be non-negative"
+    if burst_alt_m <= start_alt_m:
+        return "burst_alt_m must be greater than start_alt_m"
+    if target_rate_mps <= 0.0:
+        return "target_rate_mps must be positive"
+    if burst_alt_m > MAX_USSA76_ALT_M:
+        return f"burst_alt_m exceeds atmosphere ceiling ({MAX_USSA76_ALT_M} m)"
+    return None
 
 def atmosphere_at_position(position_m: float) -> dict:
     """Return an atmosphere dict at a given geometric altitude.
@@ -169,44 +185,114 @@ def solve_helium_mass(
 
     return best_mass_kg, best_rate_mps, best_gage_force_N
 
+def ascent_solver(
+    burst_alt_m: float,
+    start_alt_m: float,
+    target_rate_mps: float,
+    run_simulation: bool = False,
+) -> dict:
+
+    summary = {
+        "inputs": {
+            "start_alt_m": start_alt_m,
+            "burst_alt_m": burst_alt_m,
+            "target_rate_mps": target_rate_mps,
+        },
+        "results": {
+            "helium_mass_kg": None,
+            "achieved_mean_rate_mps": 0.0,
+            "initial_gage_force_N": float("nan"),
+            "success": False,
+        },
+        "limits": {
+            "max_helium_mass_kg": MAX_HELIUM_MASS_KG,
+            "atmosphere_ceiling_m": MAX_USSA76_ALT_M,
+        },
+        "forces_at_launch": None,
+        "status": {
+            "solution_found": False,
+            "error": None,
+        },
+    }
+
+    error_msg = validate_inputs(start_alt_m, burst_alt_m, target_rate_mps)
+    if error_msg is not None:
+        summary["status"]["error"] = error_msg
+        return summary
+
+    best_mass_kg, best_rate_mps, best_gage_force_N = solve_helium_mass(
+        start_alt_m, burst_alt_m, target_rate_mps
+    )
+
+    if best_mass_kg is None:
+        summary["status"]["error"] = "Target ascent rate not achievable within max helium mass"
+        return summary
+    
+    atm0 = atmosphere_at_position(start_alt_m)
+
+    buoyant_N = buoyant_force_f(start_alt_m, best_mass_kg, atm=atm0)
+    gravity_N = gravity_force_f(start_alt_m, CONSTANT_MASS_KG + best_mass_kg)
+    correction_N = force_correction_f(best_mass_kg, start_alt_m)
+
+    net_force_N = buoyant_N - gravity_N
+    initial_accel_mps2 = net_force_N / (CONSTANT_MASS_KG + best_mass_kg)
+
+    summary["forces_at_launch"] = {
+        "buoyant_force_N": buoyant_N,
+        "gravity_force_N": gravity_N,
+        "correction_force_N": correction_N,
+        "net_force_N": net_force_N,
+        "initial_acceleration_mps2": initial_accel_mps2,
+    }
+
+    summary["results"].update({
+        "helium_mass_kg": best_mass_kg,
+        "achieved_mean_rate_mps": best_rate_mps,
+        "initial_gage_force_N": best_gage_force_N,
+        "success": True,
+    })
+
+    summary["status"]["solution_found"] = True
+
+    if run_simulation:
+        simulate_ascent_motion_f(
+            helium_mass_kg=best_mass_kg,
+            start_altitude_m=start_alt_m,
+            max_altitude_m=burst_alt_m,
+            time_step_s=TIME_STEP_S,
+            constant_mass_kg=CONSTANT_MASS_KG,
+            make_plots=False,
+            log_scale_plots=False,
+            hard_stop_on_nonpositive_net_force=True,
+        )
+
+    return summary
 
 def main() -> None:
-    """CLI entry point."""
     burst_alt_m = float(input("Burst Altitude [m]: "))
     start_alt_m = float(input("Starting Altitude [m]: "))
     target_rate_mps = float(input("Desired Ascent Rate [m/s]: "))
 
-    if (
-        start_alt_m < 0.0
-        or burst_alt_m <= start_alt_m
-        or target_rate_mps <= 0.0
-        or burst_alt_m > MAX_USSA76_ALT_M
-    ):
-        raise SystemExit("Invalid inputs.")
+    error_msg = validate_inputs(start_alt_m, burst_alt_m, target_rate_mps)
+    if error_msg is not None:
+        raise SystemExit(f"Invalid inputs: {error_msg}")
 
-    best_mass_kg, best_rate_mps, best_gage_force_N = solve_helium_mass(start_alt_m, burst_alt_m, target_rate_mps)
+    summary = ascent_solver(
+        start_alt_m=start_alt_m,
+        burst_alt_m=burst_alt_m,
+        target_rate_mps=target_rate_mps,
+        run_simulation=True,
+    )
 
-    if best_mass_kg is None:
+    if not summary["results"]["success"]:
         print("\nMAX helium insufficient.")
-        print(f"MAX helium mass [kg]: {MAX_HELIUM_MASS_KG:.4f}")
-        print(f"MAX achieved ascent rate [m/s]: {best_rate_mps:.4f}")
-        print(f"Initial net force at MAX mass [N]: {best_gage_force_N:.4f}")
+        print(f"MAX helium mass [kg]: {summary['limits']['max_helium_mass_kg']:.4f}")
+        print(f"MAX achieved ascent rate [m/s]: {summary['limits']['max_achievable_rate_mps']:.4f}")
         return
 
-    print(f"\nMass for target rate [kg]: {best_mass_kg:.4f}")
-    print(f"Initial net force for target rate [N]: {best_gage_force_N:.4f}")
-    print(f"Final achieved ascent rate [m/s]: {best_rate_mps:.4f}")
-
-    simulate_ascent_motion_f(
-        helium_mass_kg=best_mass_kg,
-        start_altitude_m=start_alt_m,
-        max_altitude_m=burst_alt_m,
-        time_step_s=TIME_STEP_S,
-        constant_mass_kg=CONSTANT_MASS_KG,
-        make_plots=False,
-        log_scale_plots=False,
-        hard_stop_on_nonpositive_net_force=True,
-    )
+    print(f"\nMass for target rate [kg]: {summary['results']['helium_mass_kg']:.4f}")
+    print(f"Initial net force for target rate [N]: {summary['results']['initial_gage_force_N']:.4f}")
+    print(f"Final achieved ascent rate [m/s]: {summary['results']['achieved_mean_rate_mps']:.4f}")
 
 
 if __name__ == "__main__":

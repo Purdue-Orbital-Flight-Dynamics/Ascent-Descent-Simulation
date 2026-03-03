@@ -59,6 +59,7 @@ velocity = burst_velocity     # m/s
 acceleration = 0.0            # m/s^2
 total_mass = 8.8
 
+
 # --- Data logging vectors
 time_log = [current_time]     # seconds
 position_log = [position]     # meters
@@ -93,9 +94,14 @@ while position > ground_level:
 
     # --- Net force
     net_force = gravity_force + drag_force  # N
+<<<<<<< HEAD
     
     print('gravity: ' + str(gravity_force))
     print('drag: ' + str(drag_force))
+=======
+    # print(net_force)
+
+>>>>>>> d502e2a8db91acf57de757e30856de451202b852
     # --- State update (Forward Euler)
     acceleration = net_force / total_mass         # m/s^2
     velocity = velocity + acceleration * DT      # m/s
