@@ -1,6 +1,10 @@
-from ascent_simulation import ascent_solver
+from ascent_simulation import ascent_solver_f
 
-data = ascent_solver(start_alt_m=0, burst_alt_m=10000, target_rate_mps=5.0)
+data = ascent_solver_f(
+    start_altitude=0.0,
+    burst_altitude=10000.0,
+    target_rate=5.0,
+)
 
 for section, contents in data.items():
     print(f"\n[{section}]")
@@ -9,5 +13,5 @@ for section, contents in data.items():
         print(contents)
         continue
 
-    for k, v in contents.items():
-        print(f"{k:30s} {v}")
+    for key, value in contents.items():
+        print(f"{key:30s} {value}")

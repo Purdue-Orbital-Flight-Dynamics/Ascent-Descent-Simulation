@@ -42,7 +42,7 @@ from modules.system_m_f import system_mass_f
 
 
 # --- Simulation constants
-DT = 0.5            # time step, seconds
+DT = 0.1            # time step, seconds
 STOP_STEPS = 10000   # maximum iteration steps, dimensionless
 
 
@@ -94,14 +94,8 @@ while position > ground_level:
 
     # --- Net force
     net_force = gravity_force + drag_force  # N
-<<<<<<< HEAD
-    
-    print('gravity: ' + str(gravity_force))
-    print('drag: ' + str(drag_force))
-=======
     # print(net_force)
 
->>>>>>> d502e2a8db91acf57de757e30856de451202b852
     # --- State update (Forward Euler)
     acceleration = net_force / total_mass         # m/s^2
     velocity = velocity + acceleration * DT      # m/s
