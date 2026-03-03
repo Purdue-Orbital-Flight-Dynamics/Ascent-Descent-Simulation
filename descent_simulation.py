@@ -59,6 +59,7 @@ acceleration = 0.0            # m/s^2
 total_mass, helium_mass = system_mass_f(position, 0)
 
 
+
 # --- Data logging vectors
 time_log = [current_time]     # seconds
 position_log = [position]     # meters
@@ -93,6 +94,7 @@ while position > ground_level:
 
     # --- Net force
     net_force = gravity_force + drag_force  # N
+    # print(net_force)
 
     # --- State update (Forward Euler)
     acceleration = net_force / total_mass         # m/s^2
