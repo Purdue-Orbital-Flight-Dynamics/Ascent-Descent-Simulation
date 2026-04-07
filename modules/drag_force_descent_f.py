@@ -1,51 +1,51 @@
-try:
-    from modules.atmosphere_f import atmosphere_m
-    from modules.balloon_cross_sectional_area_f import balloon_cross_sectional_area_f
-except ModuleNotFoundError:
-    from atmosphere_f import atmosphere_m
-    from balloon_cross_sectional_area_f import balloon_cross_sectional_area_f
+#************************************************************************
+# Purdue Orbital, Flight Dynamics
+#
+# Project Name: Ascent/Descent Simulation
+#
+# Function Name: drag_force_descent
+# File Name: drag_force_descent_f.py
+#
+# Contributors:
+# Date Created:
+# Last Updated:
+#
+# Function Description:
+#   Computes the aerodynamic drag force acting on the payload or parachute
+#   during descent. Drag opposes the direction of motion — upward when
+#   descending (negative velocity), downward when ascending (positive
+#   velocity).
+#
+# References:
+#
+# Input variables:
+#   - velocity: vertical velocity of payload, m/s, varies (up = positive)
+#   - altitude: current altitude above sea level, m, positive
+#   - area: aerodynamic reference area (frontal), m^2, positive
+#   - cd: drag coefficient of the body, -, positive
+#
+# Output variables:
+#   - drag_force: aerodynamic drag force, N, varies
+#                 (positive = upward, opposes direction of motion)
+#
+#************************************************************************
 
-def drag_force_descent_f(velocity: float, altitude: float, cross_sec_area: float) -> float:
-    """
-    Computes the drag force acting on the balloon during descent.
-
-    Parameters
-    ----------
-    velocity : float
-        Descent velocity of balloon (m/s).
-    altitude : float
-        Geometric altitude (m), positive upward.
-
-    Returns
-    -------
-    float
-        Drag force on balloon (N).
-    """
-    print("Vel: ", velocity, altitude)
-    # Get air density from standard atmosphere (geometric altitude in meters)
-    atm = atmosphere_m(altitude, geometric=True, output="dict")
-    air_density = atm["rho_kgm3"]  # kg/m^3
-
-    # Get balloon cross-sectional area
-    #cross_sec_area = balloon_cross_sectional_area_f(altitude, mass, atm=atm)  # m^2
-
-    # Drag coefficient of balloon/parachute
-    DRAG_COEFFICIENT = 1.75  # dimensionless
-
-    # Compute drag force
-    drag_force = (
-        0.5
-        * DRAG_COEFFICIENT
-        * air_density
-        * cross_sec_area
-        * velocity**2
-    )  # N
-    return drag_force
+from modules.atmosphere_f import atmosphere_m
 
 
-def main():
-    pass
-    #go nuts
+def drag_force_descent(velocity: float, altitude: float, area: float, cd: float) -> float:
 
-if __name__ == "__main__":
-    main()
+    # Retrieve atmospheric properties at current altitude
+    atmosphere = atmosphere_m(altitude, output="dict")  # atmospheric state dictionary
+    rho = atmosphere.get("rho", 1.225)  # air density, kg/m^3 (fallback: sea-level standard)
+
+    # Drag magnitude: Fd = 0.5 * rho * Cd * A * v^2
+    drag_magnitude = 0.5 * rho * cd * area * velocity**2  # N, always positive
+
+    # Apply sign: drag opposes motion, so sign is opposite to velocity
+    if velocity > 0:
+        drag_force = -drag_magnitude  # payload moving up, drag acts downward, N
+    else:
+        drag_force = drag_magnitude   # payload moving down, drag acts upward, N
+
+    return drag_force  # net drag force, N, varies
