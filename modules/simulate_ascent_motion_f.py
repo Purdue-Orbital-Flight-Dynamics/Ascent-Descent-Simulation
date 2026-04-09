@@ -54,7 +54,6 @@ from modules.atmosphere_f import atmosphere_m
 from modules.buoyant_force_f import buoyant_force_f
 from modules.drag_force_f import drag_force_f
 from modules.gravity_force_f import gravity_force_f
-from modules.force_correction_f import force_correction_f
 
 
 def _empty_error_result(error_reason: str) -> dict:
@@ -123,12 +122,8 @@ def simulate_ascent_motion_f(
             break
 
         gravity_force_N = gravity_force_f(position_m, total_mass_kg)  # [N]
-        correction_force_N = force_correction_f(helium_mass_kg, position_m)  # [N]
 
         net_force_N = buoyant_force_N - drag_force_N - gravity_force_N  # [N]
-
-        if step_index == 1:
-            gage_force_N = buoyant_force_N - correction_force_N  # [N]
 
         if hard_stop_on_nonpositive_net_force and net_force_N <= 0.0:
             had_error = True

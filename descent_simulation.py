@@ -54,25 +54,25 @@ from modules.gravity_force_f import gravity_force_f
 # USER-EDITABLE PARAMETERS
 #=======================================================================
 
-# --- Simulation control
-DT = 0.01                    # timestep, s
+# Simulation control
+DT = 0.01                       # timestep, s
 STOP_STEPS = 100000000          # max iterations before forced stop, -
 
-# --- Initial conditions
+# Initial conditions
 burst_altitude = 6000.0      # altitude at balloon burst, m
 ground_level = 0.0           # termination altitude (ground), m
 burst_velocity = 5.0         # initial vertical velocity (up = +), m/s
 
 payload_mass = 10.0          # total payload mass, kg
 
-# --- Payload geometry (cylinder, flat face into airflow)
+# Payload geometry (cylinder, flat face into airflow)
 payload_diameter = 0.75      # cylinder diameter, m
 payload_cd = 1.25            # cylinder drag coefficient, -
 
 # Reference area computed from diameter (do not edit unless overriding geometry)
 payload_area = math.pi * (payload_diameter**2) / 4  # projected frontal area, m^2
 
-# --- Parachute
+# Parachute
 parachute_diameter = 3.6576  # nominal canopy diameter, m
 parachute_cd = 1.5           # parachute drag coefficient, -
 parachute_deploy_time = 3.0  # time after burst before chute deploys, s
