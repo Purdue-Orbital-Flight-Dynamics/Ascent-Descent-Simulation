@@ -80,111 +80,93 @@ parachute_deploy_time = 3.0  # time after burst before chute deploys, s
 # Parachute reference area computed from diameter
 parachute_area = math.pi * (parachute_diameter**2) / 4  # canopy projected area, m^2
 
-#=======================================================================
-# INITIAL STATE
-#=======================================================================
 
-current_time = 0.0           # elapsed simulation time, s
-position = burst_altitude    # current altitude, m
-velocity = burst_velocity    # current vertical velocity (up = +), m/s
-acceleration = 0.0           # current vertical acceleration, m/s^2
+if __name__ == "__main__":
 
-# State history logs
-time_log = [current_time]
-position_log = [position]
-velocity_log = [velocity]
-acceleration_log = [acceleration]
+    #=======================================================================
+    # INITIAL STATE
+    #=======================================================================
 
-step_index = 0               # current iteration count, -
+    current_time = 0.0           # elapsed simulation time, s
+    position = burst_altitude    # current altitude, m
+    velocity = burst_velocity    # current vertical velocity (up = +), m/s
+    acceleration = 0.0           # current vertical acceleration, m/s^2
 
-# Terminal velocity tracking
-# Terminal velocity occurs when drag force equals gravity (net force ≈ 0).
-# Detected by a sign change in acceleration after parachute deployment.
-# Time is recorded on the first zero-crossing of acceleration.
-terminal_velocity_time = None      # time when terminal velocity first reached, s
-terminal_velocity_value = None     # speed at terminal velocity, m/s
+    # State history logs
+    time_log = [current_time]
+    position_log = [position]
+    velocity_log = [velocity]
+    acceleration_log = [acceleration]
 
-print("\nDESCENT SIMULATION STARTED")
-print("==========================\n")
+    step_index = 0               # current iteration count, -
 
-#=======================================================================
-# SIMULATION LOOP
-#   Integrates equations of motion using forward Euler method.
-#   Terminates when payload reaches ground_level or STOP_STEPS exceeded.
-#=======================================================================
+    # Terminal velocity tracking
+    terminal_velocity_time = None
+    terminal_velocity_value = None
 
-while position > ground_level:
+    print("\nDESCENT SIMULATION STARTED")
+    print("==========================\n")
 
-    # Safety exit: prevent infinite loop
-    if step_index >= STOP_STEPS:
-        print("Simulation stopped: maximum step count reached.")
-        break
+    #=======================================================================
+    # SIMULATION LOOP
+    #=======================================================================
 
-    # --- Select drag configuration based on deployment phase
-    if current_time < parachute_deploy_time:
-        # Pre-deployment: use payload cylinder geometry
-        area = payload_area   # reference area, m^2
-        cd = payload_cd       # drag coefficient, -
-        phase = "PAYLOAD"
+    while position > ground_level:
+
+        if step_index >= STOP_STEPS:
+            print("Simulation stopped: maximum step count reached.")
+            break
+
+        if current_time < parachute_deploy_time:
+            area = payload_area
+            cd = payload_cd
+            phase = "PAYLOAD"
+        else:
+            area = parachute_area
+            cd = parachute_cd
+            phase = "CHUTE"
+
+        F_gravity = -gravity_force_f(position, payload_mass)
+        F_drag = drag_force_descent(velocity, position, area, cd)
+
+        F_net = F_gravity + F_drag
+        acceleration = F_net / payload_mass
+
+        TERMINAL_ACCEL_TOLERANCE = 0.01
+        if phase == "CHUTE" and terminal_velocity_time is None:
+            if abs(acceleration) < TERMINAL_ACCEL_TOLERANCE:
+                terminal_velocity_time = current_time
+                terminal_velocity_value = velocity
+
+        velocity += acceleration * DT
+        position += velocity * DT
+        current_time += DT
+
+        if position <= ground_level:
+            position = ground_level
+            velocity = 0.0
+
+        time_log.append(current_time)
+        position_log.append(position)
+        velocity_log.append(velocity)
+        acceleration_log.append(acceleration)
+
+        if step_index % (2 / DT) == 0:
+            print(f"[{phase}] t={current_time:.1f}s | h={position:.2f}m | v={velocity:.2f}m/s | a={acceleration:.2f}m/s²")
+
+        step_index += 1
+
+    #=======================================================================
+    # FINAL OUTPUT
+    #=======================================================================
+
+    print("\nSIMULATION COMPLETE")
+    print("===================")
+    print(f"Final time:     {current_time:.2f} s")
+    print(f"Final position: {position:.2f} m")
+    print(f"Final velocity: {velocity:.2f} m/s")
+
+    if terminal_velocity_time is not None:
+        print(f"Terminal velocity reached at: {terminal_velocity_time:.2f} s ({terminal_velocity_value:.2f} m/s)")
     else:
-        # Post-deployment: use parachute geometry
-        area = parachute_area # reference area, m^2
-        cd = parachute_cd     # drag coefficient, -
-        phase = "CHUTE"
-
-    # --- Compute forces (positive = upward convention)
-    F_gravity = -gravity_force_f(position, payload_mass)  # gravitational force, N (downward = negative)
-    F_drag = drag_force_descent(velocity, position, area, cd)  # aerodynamic drag force, N
-
-    # --- Net force and acceleration
-    F_net = F_gravity + F_drag    # net vertical force, N
-    acceleration = F_net / payload_mass  # vertical acceleration, m/s^2
-
-    # --- Detect terminal velocity (parachute phase only)
-    # Terminal velocity is reached when net acceleration drops to near zero —
-    # drag and gravity are balanced. A small tolerance is used rather than
-    # checking for an exact zero crossing, which is sensitive to the chute
-    # deployment spike and floating point noise.
-    TERMINAL_ACCEL_TOLERANCE = 0.01  # m/s^2, threshold for "effectively zero" acceleration
-    if phase == "CHUTE" and terminal_velocity_time is None:
-        if abs(acceleration) < TERMINAL_ACCEL_TOLERANCE:
-            terminal_velocity_time = current_time  # s
-            terminal_velocity_value = velocity      # capture speed at detection, m/s
-
-    # --- Forward Euler integration
-    velocity += acceleration * DT  # updated velocity, m/s
-    position += velocity * DT      # updated altitude, m
-    current_time += DT             # advance simulation clock, s
-
-    # --- Ground clamp: stop integration at surface
-    if position <= ground_level:
-        position = ground_level    # m
-        velocity = 0.0             # m/s
-
-    # --- Append state to logs
-    time_log.append(current_time)
-    position_log.append(position)
-    velocity_log.append(velocity)
-    acceleration_log.append(acceleration)
-
-    # Print status every 50 steps
-    if step_index % (2 / DT) == 0:
-        print(f"[{phase}] t={current_time:.1f}s | h={position:.2f}m | v={velocity:.2f}m/s | a={acceleration:.2f}m/s²")
-
-    step_index += 1
-
-#=======================================================================
-# FINAL OUTPUT
-#=======================================================================
-
-print("\nSIMULATION COMPLETE")
-print("===================")
-print(f"Final time:     {current_time:.2f} s")
-print(f"Final position: {position:.2f} m")
-print(f"Final velocity: {velocity:.2f} m/s")
-
-# Report terminal velocity result
-if terminal_velocity_time is not None:
-    print(f"Terminal velocity reached at: {terminal_velocity_time:.2f} s ({terminal_velocity_value:.2f} m/s)")
-else:
-    print("Terminal velocity: not reached during simulation")
+        print("Terminal velocity: not reached during simulation")
