@@ -1,4 +1,4 @@
 *.asv
 *.pyc
 modules/__pycache__/
-log\ascent_log.txt
+log/ascent_log.txt
