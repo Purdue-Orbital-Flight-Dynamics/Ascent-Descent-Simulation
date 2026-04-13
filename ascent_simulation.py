@@ -1,394 +1,178 @@
-########################################################################
-# Purdue Orbital, Flight Dynamics
-#
-# Project Name: Ascent / Descent Modeling
-#
-# Script Name: Ascent Simulation
-# File Name: ascent_simulation.py
-#
-# Contributors: Purdue Orbital Flight Dynamics Team
-# Date Created: Unknown
-# Last Updated: 04/08/2026
-#
-# Script Description:
-#   Solves for the helium mass required to achieve a target mean ascent
-#   rate between a starting altitude and a burst altitude using a
-#   time-marching ascent simulation.
-#
-#   The script:
-#     - Uses the 1976 Standard Atmosphere (modules.atmosphere_f)
-#     - Performs a binary search on helium mass
-#     - Optionally runs a full ascent simulation for verification
-#
-# References:
-#   None
-#
-# Input Parameters (CLI):
-#   - start_altitude: starting altitude, meters, >= 0
-#   - burst_altitude: burst altitude, meters, > start altitude
-#   - target_rate: desired mean ascent rate, m/s, > 0
-#
-# Output:
-#   - Required helium mass, kg
-#   - Initial gage force, N
-#   - Achieved mean ascent rate, m/s
-#
-########################################################################
-
 from __future__ import annotations
+import time
 
-import numpy as np
-import os
-from datetime import datetime
-
-from modules.atmosphere_f import atmosphere_m
+# Updated Imports
+from modules.fast_atmosphere import FastAtmosphere
+from modules.logger_f import log_entry_f
 from modules.buoyant_force_f import buoyant_force_f
 from modules.drag_force_f import drag_force_f
 from modules.gravity_force_f import gravity_force_f
-from modules.simulate_ascent_motion_f import simulate_ascent_motion_f
-
 
 # --------------------------- CONSTANTS --------------------------------
-TIME_STEP = 0.1                     # simulation time step, s
-BALLOON_MASS_KG = 2.0              # kg
-NECK_MASS_KG = 0.0                 # kg
-ROPE_MASS_KG = 0.0                 # kg
-OTHER_MASS_KG = 0.0                # kg
-PAYLOAD_MASS_KG = 10.0             # kg
+TIME_STEP = 0.1 
+BALLOON_MASS_KG = 2.0
+NECK_MASS_KG = 0.0
+ROPE_MASS_KG = 0.0
+OTHER_MASS_KG = 0.0
+PAYLOAD_MASS_KG = 10.0
 
 CONSTANT_MASS = (
-    BALLOON_MASS_KG
-    + NECK_MASS_KG
-    + ROPE_MASS_KG
-    + OTHER_MASS_KG
-    + PAYLOAD_MASS_KG
-)                                   # fixed non-helium mass, kg
+    BALLOON_MASS_KG + NECK_MASS_KG + ROPE_MASS_KG + OTHER_MASS_KG + PAYLOAD_MASS_KG
+)
+GAGE_MASS_KG = BALLOON_MASS_KG + NECK_MASS_KG + ROPE_MASS_KG + OTHER_MASS_KG
 
-GAGE_MASS_KG = (
-    BALLOON_MASS_KG
-    + NECK_MASS_KG
-    + ROPE_MASS_KG
-    + OTHER_MASS_KG
-)                                   # kg
+MAX_HELIUM_MASS = 50.0
+MAX_BINARY_ITERATIONS = 80
+RATE_TOLERANCE = 1e-4 
+MAX_ATMOSPHERE_ALTITUDE = 84_852.0
 
-MAX_HELIUM_MASS = 50.0              # helium search upper bound, kg
-MAX_BINARY_ITERATIONS = 80          # binary search iteration limit
-RATE_DECIMALS = 5                   # rate comparison precision
-MAX_ATMOSPHERE_ALTITUDE = 84_852.0  # USSA 1976 ceiling, m
+ATM_CACHE = FastAtmosphere(max_alt=MAX_ATMOSPHERE_ALTITUDE)
 # ---------------------------------------------------------------------
 
-
-def validate_inputs_f(
-    start_altitude: float,
-    burst_altitude: float,
-    target_rate: float,
-) -> str | None:
-    """
-    Validate solver input parameters.
-
-    Input:
-    - start_altitude: starting altitude, m, >= 0
-    - burst_altitude: burst altitude, m, > start_altitude
-    - target_rate: desired ascent rate, m/s, > 0
-
-    Output:
-    - error message string if invalid, otherwise None
-    """
-    if start_altitude < 0.0:
-        return "start_altitude must be non-negative"
-
-    if burst_altitude <= start_altitude:
-        return "burst_altitude must be greater than start_altitude"
-
-    if target_rate <= 0.0:
-        return "target_rate must be positive"
-
-    if burst_altitude > MAX_ATMOSPHERE_ALTITUDE:
-        return "burst_altitude exceeds standard atmosphere ceiling"
-
+def validate_inputs_f(start_altitude: float, burst_altitude: float, target_rate: float) -> str | None:
+    if start_altitude < 0.0: return "start_altitude must be non-negative"
+    if burst_altitude <= start_altitude: return "burst_altitude must be greater than start_altitude"
+    if target_rate <= 0.0: return "target_rate must be positive"
+    if burst_altitude > MAX_ATMOSPHERE_ALTITUDE: return "burst_altitude exceeds ceiling"
     return None
 
+def simulate_ascent_rate_f(start_alt, burst_alt, helium_mass, keep_history=False):
+    total_mass = CONSTANT_MASS + helium_mass
+    altitude, velocity, elapsed_time = start_alt, 0.0, 0.0
+    history = []
 
-def atmosphere_at_altitude_f(altitude: float) -> dict:
-    """
-    Return atmospheric properties at a given geometric altitude.
+    while altitude < burst_alt:
+        atm = ATM_CACHE.get_atm(altitude)
+        buoyant = buoyant_force_f(altitude, helium_mass, atm=atm)
+        drag = drag_force_f(velocity, helium_mass, altitude, atm=atm)
+        gravity = gravity_force_f(altitude, total_mass)
 
-    Input:
-    - altitude: geometric altitude, m, >= 0
+        net_force = buoyant - drag - gravity
+        if net_force <= 0.0: return 0.0, True, history
 
-    Output:
-    - atmosphere dictionary (SI units)
-    """
-    return atmosphere_m(altitude, geometric=True)
+        acceleration = net_force / total_mass
+        velocity += acceleration * TIME_STEP
+        altitude += velocity * TIME_STEP
+        elapsed_time += TIME_STEP
 
+        if keep_history:
+            history.append({"altitude": altitude, "velocity": velocity})
 
-def simulate_ascent_rate_f(
-    start_altitude: float,
-    burst_altitude: float,
-    helium_mass: float,
-) -> tuple[float, bool, list[dict]]:
-    """
-    Simulate ascent and compute mean ascent rate for a given helium mass.
-
-    Input:
-    - start_altitude: starting altitude, m
-    - burst_altitude: burst altitude, m
-    - helium_mass: helium mass, kg
-
-    Output:
-    - mean_rate: mean ascent rate, m/s
-    - failed: True if ascent fails due to non-positive net force
-    - history: list of state dictionaries
-    """
-    total_mass = CONSTANT_MASS + helium_mass  # kg
-
-    altitude = start_altitude                 # m
-    velocity = 0.0                            # m/s
-
-    history: list[dict] = []
-
-    while altitude < burst_altitude:
-        atmosphere = atmosphere_at_altitude_f(altitude)
-
-        buoyant_force = buoyant_force_f(altitude, helium_mass, atm=atmosphere)  # N
-        drag_force = drag_force_f(velocity, helium_mass, altitude, atm=atmosphere)  # N
-        gravity_force = gravity_force_f(altitude, total_mass)  # N
-
-        net_force = buoyant_force - drag_force - gravity_force  # N
-
-        if net_force <= 0.0:
-            return 0.0, True, history
-
-        acceleration = net_force / total_mass               # m/s^2
-        velocity += acceleration * TIME_STEP                # m/s
-        altitude += velocity * TIME_STEP                    # m
-
-        history.append({
-            "altitude": altitude,
-            "velocity": velocity,
-        })
-
-    if len(history) == 0:
-        return 0.0, True, history
-
-    mean_rate = float(np.mean([step["velocity"] for step in history]))
+    mean_rate = (altitude - start_alt) / elapsed_time if elapsed_time > 0 else 0.0
     return mean_rate, False, history
 
-
-def solve_helium_mass_f(
-    start_altitude: float,
-    burst_altitude: float,
-    target_rate: float,
-) -> tuple[float | None, float]:
-    """
-    Solve for helium mass required to meet target ascent rate.
-
-    Output:
-    - helium_mass (or None if unattainable)
-    - achieved mean ascent rate, m/s
-    """
-    max_rate, failed, _ = simulate_ascent_rate_f(
-        start_altitude,
-        burst_altitude,
-        MAX_HELIUM_MASS,
-    )
-
-    if failed or max_rate < target_rate:
-        return None, max_rate
-
-    lower_mass = 0.0
-    upper_mass = MAX_HELIUM_MASS
-
-    best_mass = upper_mass
-    best_rate = max_rate
+def solve_helium_mass_f(start_alt: float, burst_alt: float, target_rate: float):
+    lower_mass, upper_mass = 0.0, MAX_HELIUM_MASS
+    best_mass, best_rate = upper_mass, 0.0
 
     for _ in range(MAX_BINARY_ITERATIONS):
         test_mass = 0.5 * (lower_mass + upper_mass)
-
-        rate, failed, _ = simulate_ascent_rate_f(
-            start_altitude,
-            burst_altitude,
-            test_mass,
-        )
+        rate, failed, _ = simulate_ascent_rate_f(start_alt, burst_alt, test_mass)
 
         if failed or rate < target_rate:
             lower_mass = test_mass
-            continue
-
-        upper_mass = test_mass
-        best_mass = test_mass
-        best_rate = rate
-
-        if round(best_rate, RATE_DECIMALS) == round(target_rate, RATE_DECIMALS):
+        else:
+            upper_mass = test_mass
+            best_mass, best_rate = test_mass, rate
+            
+        if abs(best_rate - target_rate) < RATE_TOLERANCE:
             break
-
     return best_mass, best_rate
 
-
-def ascent_solver_f(
-    start_altitude: float,
-    burst_altitude: float,
-    target_rate: float,
-    run_simulation: bool = False,
-) -> dict:
-    """
-    High-level ascent solver interface.
-
-    Returns a structured summary dictionary.
-    """
+def ascent_solver_f(start_altitude: float, burst_altitude: float, target_rate: float) -> dict:
+    start_time = time.perf_counter() # Start high-precision timer
 
     summary = {
-        "inputs": {
-            "start_altitude": start_altitude,
-            "burst_altitude": burst_altitude,
-            "target_rate": target_rate,
-        },
+        "inputs": {"start_altitude": start_altitude, "burst_altitude": burst_altitude, "target_rate": target_rate},
         "results": {
-            "helium_mass": None,
-            "achieved_rate": 0.0,
-            "initial_gage_force": 0.0,
-            "success": False,
+            "helium_mass": None, 
+            "achieved_rate": 0.0, 
+            "initial_gage_force": 0.0, 
+            "success": False, 
+            "history": [],
+            "calculation_time": 0.0 # Placeholder
         },
-        "limits": {
-            "max_helium_mass": MAX_HELIUM_MASS,
-            "atmosphere_ceiling": MAX_ATMOSPHERE_ALTITUDE,
-        },
+        "limits": {"max_helium_mass": MAX_HELIUM_MASS, "atmosphere_ceiling": MAX_ATMOSPHERE_ALTITUDE},
         "forces_at_launch": None,
-        "status": {
-            "solution_found": False,
-            "error": None,
-        },
+        "status": {"solution_found": False, "error": None},
     }
 
     error = validate_inputs_f(start_altitude, burst_altitude, target_rate)
-    if error is not None:
+    if error:
         summary["status"]["error"] = error
+        summary["results"]["calculation_time"] = time.perf_counter() - start_time
         return summary
 
-    helium_mass, rate = solve_helium_mass_f(
-        start_altitude,
-        burst_altitude,
-        target_rate,
-    )
+    # Core logic (Binary search + final history run)
+    helium_mass, rate = solve_helium_mass_f(start_altitude, burst_altitude, target_rate)
+    _, failed, final_history = simulate_ascent_rate_f(start_altitude, burst_altitude, helium_mass, keep_history=True)
 
-    if helium_mass is None:
+    if failed and rate < target_rate:
         summary["status"]["error"] = "Target ascent rate not achievable"
+        summary["results"]["calculation_time"] = time.perf_counter() - start_time
         return summary
 
-    atmosphere = atmosphere_at_altitude_f(start_altitude)
-
-    buoyant = buoyant_force_f(start_altitude, helium_mass, atm=atmosphere)  # N
-    gravity = gravity_force_f(start_altitude, CONSTANT_MASS + helium_mass)  # N
-    gage_gravity = gravity_force_f(start_altitude, GAGE_MASS_KG)            # N
-
-    net_force = buoyant - gravity
-    initial_acceleration = net_force / (CONSTANT_MASS + helium_mass)
-    gage_force = buoyant - gage_gravity
-
+    # Physics calculations
+    atm_launch = ATM_CACHE.get_atm(start_altitude)
+    buoyant = buoyant_force_f(start_altitude, helium_mass, atm=atm_launch)
+    gravity = gravity_force_f(start_altitude, CONSTANT_MASS + helium_mass)
+    gage_gravity = gravity_force_f(start_altitude, GAGE_MASS_KG)
+    
     summary["forces_at_launch"] = {
         "buoyant_force": buoyant,
         "gravity_force": gravity,
-        "net_force": net_force,
-        "initial_acceleration": initial_acceleration,
+        "net_force": buoyant - gravity,
+        "initial_acceleration": (buoyant - gravity) / (CONSTANT_MASS + helium_mass),
     }
 
+    # Finalize results
     summary["results"].update({
         "helium_mass": helium_mass,
         "achieved_rate": rate,
-        "initial_gage_force": gage_force,
+        "initial_gage_force": buoyant - gage_gravity,
         "success": True,
+        "history": final_history
     })
-
     summary["status"]["solution_found"] = True
 
-    if run_simulation:
-        simulate_ascent_motion_f(
-            helium_mass_kg=helium_mass,
-            start_altitude_m=start_altitude,
-            max_altitude_m=burst_altitude,
-            time_step_s=TIME_STEP,
-            constant_mass_kg=CONSTANT_MASS,
-            make_plots=False,
-            log_scale_plots=False,
-            hard_stop_on_nonpositive_net_force=True,
-        )
-
+    # Stop timer and store result
+    summary["results"]["calculation_time"] = time.perf_counter() - start_time
     return summary
 
-def log_entry_f(status: str, summary: dict, closest_step: dict = None, error: str = None) -> None:
-    """Helper to ensure directory exists and append data to a log file."""
-    log_dir = "log"
-    log_file = os.path.join(log_dir, "ascent_log.txt")
+def main():
+    try:
+        b_alt = float(input("Burst Altitude [m]: "))
+        s_alt = float(input("Starting Altitude [m]: "))
+        t_rate = float(input("Desired Ascent Rate [m/s]: "))
+        v_check_str = input("Altitude for velocity check [m] (Leave blank to skip): ")
 
-    # Ensure /log subfolder exists
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
+        summary = ascent_solver_f(s_alt, b_alt, t_rate)
 
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    with open(log_file, "a") as f:
-        f.write(f"--- Run at {timestamp} | Status: {status} ---\n")
-        if error:
-            f.write(f"Error: {error}\n")
-        else:
-            inputs = summary['inputs']
-            results = summary['results']
-            f.write(f"Inputs: Start={inputs['start_altitude']}m, Burst={inputs['burst_altitude']}m, Target={inputs['target_rate']}m/s\n")
-            f.write(f"Outputs: Helium={results['helium_mass']:.4f}kg, Mean Rate={results['achieved_rate']:.4f}m/s, Gage Force={results['initial_gage_force']:.4f}N\n")
-            if closest_step:
-                f.write(f"Point Check: Alt={closest_step['altitude']:.2f}m, Vel={closest_step['velocity']:.4f}m/s\n")
-        f.write("-" * 50 + "\n\n")
+        if not summary["results"]["success"]:
+            log_entry_f("ERROR", summary, error=summary["status"]["error"])
+            print(f"Error: {summary['status']['error']}")
+            return
 
+        res = summary["results"]
+        closest_step = None
+        if v_check_str.strip():
+            check_alt = float(v_check_str)
+            closest_step = min(res["history"], key=lambda x: abs(x["altitude"] - check_alt))
 
-def main() -> None:
-    # 1. Handle Inputs with the new "Skip" logic
-    burst_altitude_str = input("Burst Altitude [m]: ")
-    start_altitude_str = input("Starting Altitude [m]: ")
-    target_rate_str = input("Desired Ascent Rate [m/s]: ")
-    
-    # Check for blank input for the specific altitude query
-    target_specific_alt_str = input("Altitude for velocity check [m] (Leave blank to skip): ")
+        # Outputs
+        print(f"\nHelium mass required [kg]: {res['helium_mass']:.4f}")
+        print(f"Initial gage force [N]: {res['initial_gage_force']:.4f}")
+        print(f"Achieved ascent rate [m/s]: {res['achieved_rate']:.4f}")
+        if closest_step:
+            print(f"Velocity at {closest_step['altitude']:.2f} m: {closest_step['velocity']:.4f} m/s")
+        
+        # New console output
+        print(f"Calculation time: {res['calculation_time']:.6f} seconds")
 
-    # Basic conversion (assuming valid floats for the first three as per original script)
-    burst_altitude = float(burst_altitude_str)
-    start_altitude = float(start_altitude_str)
-    target_rate = float(target_rate_str)
+        log_entry_f("SUCCESS", summary, closest_step)
 
-    # 2. Run the Solver
-    summary = ascent_solver_f(
-        start_altitude=start_altitude,
-        burst_altitude=burst_altitude,
-        target_rate=target_rate,
-        run_simulation=True,
-    )
-
-    if not summary["results"]["success"]:
-        # Log the error before exiting
-        log_entry_f("ERROR", summary, error=summary["status"]["error"])
-        raise SystemExit(summary["status"]["error"])
-
-    # 3. Handle optional velocity check
-    closest_step = None
-    if target_specific_alt_str.strip():
-        target_specific_alt = float(target_specific_alt_str)
-        _, _, full_history = simulate_ascent_rate_f(
-            start_altitude,
-            burst_altitude,
-            summary['results']['helium_mass'],
-        )
-        closest_step = min(full_history, key=lambda step: abs(step["altitude"] - target_specific_alt))
-
-    # 4. Console Output
-    print(f"\nHelium mass required [kg]: {summary['results']['helium_mass']:.4f}")
-    print(f"Initial gage force [N]: {summary['results']['initial_gage_force']:.4f}")
-    print(f"Achieved ascent rate [m/s]: {summary['results']['achieved_rate']:.4f}")
-    
-    if closest_step:
-        print(f"Velocity at {closest_step['altitude']:.2f} m: {closest_step['velocity']:.4f} m/s")
-
-    # 5. Logging Feature
-    log_entry_f("SUCCESS", summary, closest_step)
-
+    except ValueError as e:
+        print(f"Input Error: Please enter numeric values. ({e})")
 
 if __name__ == "__main__":
     main()
