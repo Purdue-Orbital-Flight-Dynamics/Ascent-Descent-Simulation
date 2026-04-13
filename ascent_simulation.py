@@ -38,6 +38,8 @@
 from __future__ import annotations
 
 import numpy as np
+import os
+from datetime import datetime
 
 from modules.atmosphere_f import atmosphere_m
 from modules.buoyant_force_f import buoyant_force_f
@@ -313,13 +315,46 @@ def ascent_solver_f(
 
     return summary
 
+def log_entry_f(status: str, summary: dict, closest_step: dict = None, error: str = None) -> None:
+    """Helper to ensure directory exists and append data to a log file."""
+    log_dir = "log"
+    log_file = os.path.join(log_dir, "ascent_log.txt")
+
+    # Ensure /log subfolder exists
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    with open(log_file, "a") as f:
+        f.write(f"--- Run at {timestamp} | Status: {status} ---\n")
+        if error:
+            f.write(f"Error: {error}\n")
+        else:
+            inputs = summary['inputs']
+            results = summary['results']
+            f.write(f"Inputs: Start={inputs['start_altitude']}m, Burst={inputs['burst_altitude']}m, Target={inputs['target_rate']}m/s\n")
+            f.write(f"Outputs: Helium={results['helium_mass']:.4f}kg, Mean Rate={results['achieved_rate']:.4f}m/s, Gage Force={results['initial_gage_force']:.4f}N\n")
+            if closest_step:
+                f.write(f"Point Check: Alt={closest_step['altitude']:.2f}m, Vel={closest_step['velocity']:.4f}m/s\n")
+        f.write("-" * 50 + "\n\n")
+
 
 def main() -> None:
-    burst_altitude = float(input("Burst Altitude [m]: "))
-    start_altitude = float(input("Starting Altitude [m]: "))
-    target_rate = float(input("Desired Ascent Rate [m/s]: "))
-    target_specific_alt = float(input("Altitude for velocity check [m]: "))
+    # 1. Handle Inputs with the new "Skip" logic
+    burst_altitude_str = input("Burst Altitude [m]: ")
+    start_altitude_str = input("Starting Altitude [m]: ")
+    target_rate_str = input("Desired Ascent Rate [m/s]: ")
+    
+    # Check for blank input for the specific altitude query
+    target_specific_alt_str = input("Altitude for velocity check [m] (Leave blank to skip): ")
 
+    # Basic conversion (assuming valid floats for the first three as per original script)
+    burst_altitude = float(burst_altitude_str)
+    start_altitude = float(start_altitude_str)
+    target_rate = float(target_rate_str)
+
+    # 2. Run the Solver
     summary = ascent_solver_f(
         start_altitude=start_altitude,
         burst_altitude=burst_altitude,
@@ -328,20 +363,31 @@ def main() -> None:
     )
 
     if not summary["results"]["success"]:
+        # Log the error before exiting
+        log_entry_f("ERROR", summary, error=summary["status"]["error"])
         raise SystemExit(summary["status"]["error"])
 
-    _, _, full_history = simulate_ascent_rate_f(
-        start_altitude,
-        burst_altitude,
-        summary['results']['helium_mass'],
-    )
+    # 3. Handle optional velocity check
+    closest_step = None
+    if target_specific_alt_str.strip():
+        target_specific_alt = float(target_specific_alt_str)
+        _, _, full_history = simulate_ascent_rate_f(
+            start_altitude,
+            burst_altitude,
+            summary['results']['helium_mass'],
+        )
+        closest_step = min(full_history, key=lambda step: abs(step["altitude"] - target_specific_alt))
 
-    closest_step = min(full_history, key=lambda step: abs(step["altitude"] - target_specific_alt))
-
+    # 4. Console Output
     print(f"\nHelium mass required [kg]: {summary['results']['helium_mass']:.4f}")
     print(f"Initial gage force [N]: {summary['results']['initial_gage_force']:.4f}")
     print(f"Achieved ascent rate [m/s]: {summary['results']['achieved_rate']:.4f}")
-    print(f"Velocity at {closest_step['altitude']:.2f} m: {closest_step['velocity']:.4f} m/s")
+    
+    if closest_step:
+        print(f"Velocity at {closest_step['altitude']:.2f} m: {closest_step['velocity']:.4f} m/s")
+
+    # 5. Logging Feature
+    log_entry_f("SUCCESS", summary, closest_step)
 
 
 if __name__ == "__main__":
