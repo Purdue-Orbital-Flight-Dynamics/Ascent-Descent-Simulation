@@ -1,3 +1,4 @@
 *.asv
 *.pyc
 modules/__pycache__/
+log\ascent_log.txt
