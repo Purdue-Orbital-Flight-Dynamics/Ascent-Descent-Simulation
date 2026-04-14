@@ -3,7 +3,7 @@ import time
 
 # Updated Imports
 from modules.fast_atmosphere import FastAtmosphere
-from modules.logger_f import log_entry_f
+from modules.ascent_logger_f import log_entry_f
 from modules.buoyant_force_f import buoyant_force_f
 from modules.drag_force_f import drag_force_f
 from modules.gravity_force_f import gravity_force_f

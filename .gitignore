@@ -2,4 +2,5 @@
 *.pyc
 modules/__pycache__/
 log/ascent_log.txt
+log/descent_log.txt
 cache/atm_cache.pkl

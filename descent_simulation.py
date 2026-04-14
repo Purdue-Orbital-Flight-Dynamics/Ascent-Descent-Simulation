@@ -2,174 +2,154 @@
 # Purdue Orbital, Flight Dynamics
 #
 # Project Name: Ascent/Descent Simulation
-#
 # Script Name: descent_simulation.py
-#
-# Contributors: Cayden Varno
-# Date Created: 4/6/26
-# Last Updated: 4/6/26
-#
-# Script Description:
-#   Simulates the vertical descent of a cylindrical payload with a
-#   deployable parachute. Uses forward Euler integration to propagate
-#   position and velocity from burst altitude to ground level.
-#
-#   Drag is computed in two phases:
-#     1. Pre-deployment: cylinder (flat face into airflow) drag only
-#     2. Post-deployment: parachute drag dominates
-#
-#   Gravity and atmospheric density vary with altitude via external
-#   function modules.
-#
-# References:
-#
-# Input variables (user-editable parameters):
-#   - DT: simulation timestep, s, positive
-#   - STOP_STEPS: maximum iteration count before forced exit, -, positive
-#   - burst_altitude: initial altitude at balloon burst, m, positive
-#   - ground_level: target termination altitude, m, positive or zero
-#   - burst_velocity: initial vertical velocity at burst, m/s, varies
-#                     (positive = upward)
-#   - payload_mass: total descending payload mass, kg, positive
-#   - payload_diameter: diameter of cylindrical payload body, m, positive
-#   - payload_cd: drag coefficient of cylinder (flat face), -, positive
-#   - parachute_diameter: nominal parachute canopy diameter, m, positive
-#   - parachute_cd: parachute drag coefficient, -, positive
-#   - parachute_deploy_time: elapsed time before chute deploys, s, positive
-#
-# Output variables:
-#   - time_log: time history of simulation, s, positive
-#   - position_log: altitude history, m, positive
-#   - velocity_log: vertical velocity history, m/s, varies
-#   - acceleration_log: vertical acceleration history, m/s^2, varies
-#
 #************************************************************************
 
 import math
+import time
+import sys
 
 from modules.drag_force_descent_f import drag_force_descent
 from modules.gravity_force_f import gravity_force_f
+from modules.log_descent_f import log_descent_entry
 
-#=======================================================================
-# USER-EDITABLE PARAMETERS
-#=======================================================================
-
-# Simulation control
-DT = 0.01                       # timestep, s
-STOP_STEPS = 100000000          # max iterations before forced stop, -
-
-# Initial conditions
-burst_altitude = 6000.0      # altitude at balloon burst, m
-ground_level = 0.0           # termination altitude (ground), m
-burst_velocity = 5.0         # initial vertical velocity (up = +), m/s
-
-payload_mass = 10.0          # total payload mass, kg
-
-# Payload geometry (cylinder, flat face into airflow)
-payload_diameter = 0.75      # cylinder diameter, m
-payload_cd = 1.25            # cylinder drag coefficient, -
-
-# Reference area computed from diameter (do not edit unless overriding geometry)
-payload_area = math.pi * (payload_diameter**2) / 4  # projected frontal area, m^2
-
-# Parachute
-parachute_diameter = 3.6576  # nominal canopy diameter, m
-parachute_cd = 1.5           # parachute drag coefficient, -
-parachute_deploy_time = 3.0  # time after burst before chute deploys, s
-
-# Parachute reference area computed from diameter
-parachute_area = math.pi * (parachute_diameter**2) / 4  # canopy projected area, m^2
-
+def get_input(prompt, default):
+    """Helper to allow quick enters for default values or custom inputs."""
+    user_val = input(f"{prompt} [{default}]: ").strip()
+    return float(user_val) if user_val else default
 
 def main():
+    print("--- DESCENT SIMULATION CONFIGURATION ---")
+    
+    # Simulation control
+    DT = 0.01
+    STOP_STEPS = 100000000
+
+    # User Inputs
+    try:
+        burst_altitude = get_input("Enter burst altitude (m)", 6000.0)
+        ground_level   = get_input("Enter ground level (m)", 0.0)
+        burst_velocity = get_input("Enter initial velocity (m/s, +=up)", 5.0)
+        payload_mass   = get_input("Enter payload mass (kg)", 10.0)
+        
+        payload_dia    = get_input("Enter payload diameter (m)", 0.75)
+        payload_cd     = get_input("Enter payload Cd", 1.25)
+        
+        chute_dia      = get_input("Enter parachute diameter (m)", 3.6576)
+        chute_cd       = get_input("Enter parachute Cd", 1.5)
+        deploy_time    = get_input("Enter deployment delay (s)", 3.0)
+    except ValueError:
+        print("Error: Invalid numeric input. Exiting.")
+        sys.exit(1)
+
+    # Pre-calculations
+    payload_area = math.pi * (payload_dia**2) / 4
+    parachute_area = math.pi * (chute_dia**2) / 4
+
+    # Track execution time
+    start_calc_time = time.time()
 
     #=======================================================================
     # INITIAL STATE
     #=======================================================================
+    current_time = 0.0
+    position = burst_altitude
+    velocity = burst_velocity
+    acceleration = 0.0
 
-    current_time = 0.0           # elapsed simulation time, s
-    position = burst_altitude    # current altitude, m
-    velocity = burst_velocity    # current vertical velocity (up = +), m/s
-    acceleration = 0.0           # current vertical acceleration, m/s^2
-
-    # State history logs
     time_log = [current_time]
     position_log = [position]
     velocity_log = [velocity]
     acceleration_log = [acceleration]
 
-    step_index = 0               # current iteration count, -
-
-    # Terminal velocity tracking
+    step_index = 0
     terminal_velocity_time = None
     terminal_velocity_value = None
+    TERMINAL_ACCEL_TOLERANCE = 0.01
+    simulation_error = None
 
-    print("\nDESCENT SIMULATION STARTED")
-    print("==========================\n")
+    print("\nSIMULATION RUNNING...")
 
     #=======================================================================
     # SIMULATION LOOP
     #=======================================================================
+    try:
+        # Phase 1: Freefall
+        while position > ground_level and current_time < deploy_time:
+            if step_index >= STOP_STEPS:
+                simulation_error = "Max steps reached (Phase 1)"
+                break
 
-    while position > ground_level:
+            F_g = -gravity_force_f(position, payload_mass)
+            F_d = drag_force_descent(velocity, position, payload_area, payload_cd)
+            
+            acceleration = (F_g + F_d) / payload_mass
+            velocity += acceleration * DT
+            position += velocity * DT
+            current_time += DT
 
-        if step_index >= STOP_STEPS:
-            print("Simulation stopped: maximum step count reached.")
-            break
+            time_log.append(current_time)
+            position_log.append(position)
+            velocity_log.append(velocity)
+            acceleration_log.append(acceleration)
+            step_index += 1
 
-        if current_time < parachute_deploy_time:
-            area = payload_area
-            cd = payload_cd
-            phase = "PAYLOAD"
-        else:
-            area = parachute_area
-            cd = parachute_cd
-            phase = "CHUTE"
+        # Phase 2: Parachute
+        while position > ground_level and not simulation_error:
+            if step_index >= STOP_STEPS:
+                simulation_error = "Max steps reached (Phase 2)"
+                break
 
-        F_gravity = -gravity_force_f(position, payload_mass)
-        F_drag = drag_force_descent(velocity, position, area, cd)
+            F_g = -gravity_force_f(position, payload_mass)
+            F_d = drag_force_descent(velocity, position, parachute_area, chute_cd)
+            
+            acceleration = (F_g + F_d) / payload_mass
 
-        F_net = F_gravity + F_drag
-        acceleration = F_net / payload_mass
-
-        TERMINAL_ACCEL_TOLERANCE = 0.01
-        if phase == "CHUTE" and terminal_velocity_time is None:
-            if abs(acceleration) < TERMINAL_ACCEL_TOLERANCE:
+            if terminal_velocity_time is None and abs(acceleration) < TERMINAL_ACCEL_TOLERANCE:
                 terminal_velocity_time = current_time
                 terminal_velocity_value = velocity
 
-        velocity += acceleration * DT
-        position += velocity * DT
-        current_time += DT
+            velocity += acceleration * DT
+            position += velocity * DT
+            current_time += DT
 
-        if position <= ground_level:
-            position = ground_level
-            velocity = 0.0
+            if position <= ground_level:
+                position = ground_level
+                velocity = 0.0
 
-        time_log.append(current_time)
-        position_log.append(position)
-        velocity_log.append(velocity)
-        acceleration_log.append(acceleration)
+            time_log.append(current_time)
+            position_log.append(position)
+            velocity_log.append(velocity)
+            acceleration_log.append(acceleration)
+            step_index += 1
+            
+    except Exception as e:
+        simulation_error = str(e)
 
-        if step_index % (2 / DT) == 0:
-            print(f"[{phase}] t={current_time:.1f}s | h={position:.2f}m | v={velocity:.2f}m/s | a={acceleration:.2f}m/s²")
-
-        step_index += 1
+    total_calc_time = time.time() - start_calc_time
 
     #=======================================================================
-    # FINAL OUTPUT
+    # LOGGING AND OUTPUT
     #=======================================================================
+    summary_dict = {
+        'inputs': {
+            'burst_altitude': burst_altitude,
+            'payload_mass': payload_mass,
+            'parachute_deploy_time': deploy_time
+        },
+        'results': {
+            'final_time': current_time,
+            'final_velocity': velocity,
+            'terminal_velocity_value': terminal_velocity_value,
+            'calculation_time': total_calc_time
+        }
+    }
 
-    print("\nSIMULATION COMPLETE")
-    print("===================")
-    print(f"Final time:     {current_time:.2f} s")
-    print(f"Final position: {position:.2f} m")
-    print(f"Final velocity: {velocity:.2f} m/s")
+    log_descent_entry("SUCCESS" if not simulation_error else "ERROR", summary_dict, error=simulation_error)
 
-    if terminal_velocity_time is not None:
-        print(f"Terminal velocity reached at: {terminal_velocity_time:.2f} s ({terminal_velocity_value:.2f} m/s)")
-    else:
-        print("Terminal velocity: not reached during simulation")
-        
+    print(f"\nDONE. Final Altitude: {position:.2f}m | Time: {current_time:.2f}s")
+    if terminal_velocity_value:
+        print(f"Terminal Velocity: {terminal_velocity_value:.2f} m/s")
+
 if __name__ == '__main__':
     main()
