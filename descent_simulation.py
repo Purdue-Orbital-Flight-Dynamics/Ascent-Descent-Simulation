@@ -81,7 +81,7 @@ parachute_deploy_time = 3.0  # time after burst before chute deploys, s
 parachute_area = math.pi * (parachute_diameter**2) / 4  # canopy projected area, m^2
 
 
-if __name__ == "__main__":
+def main():
 
     #=======================================================================
     # INITIAL STATE
@@ -170,3 +170,6 @@ if __name__ == "__main__":
         print(f"Terminal velocity reached at: {terminal_velocity_time:.2f} s ({terminal_velocity_value:.2f} m/s)")
     else:
         print("Terminal velocity: not reached during simulation")
+        
+if __name__ == '__main__':
+    main()
