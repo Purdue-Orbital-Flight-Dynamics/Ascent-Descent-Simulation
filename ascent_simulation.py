@@ -7,6 +7,7 @@ from modules.ascent_logger_f import log_entry_f
 from modules.buoyant_force_f import buoyant_force_f
 from modules.drag_force_f import drag_force_f
 from modules.gravity_force_f import gravity_force_f
+from modules.ideal_gas import ideal_gas
 
 # --------------------------- CONSTANTS --------------------------------
 TIME_STEP = 0.1 
@@ -117,6 +118,7 @@ def ascent_solver_f(start_altitude: float, burst_altitude: float, target_rate: f
     buoyant = buoyant_force_f(start_altitude, helium_mass, atm=atm_launch)
     gravity = gravity_force_f(start_altitude, CONSTANT_MASS + helium_mass)
     gage_gravity = gravity_force_f(start_altitude, GAGE_MASS_KG)
+    std_volume = ideal_gas(helium_mass)
     
     summary["forces_at_launch"] = {
         "buoyant_force": buoyant,
@@ -128,6 +130,7 @@ def ascent_solver_f(start_altitude: float, burst_altitude: float, target_rate: f
     # Finalize results
     summary["results"].update({
         "helium_mass": helium_mass,
+        "helium_volume": std_volume,
         "achieved_rate": rate,
         "initial_gage_force": buoyant - gage_gravity,
         "success": True,
@@ -161,6 +164,7 @@ def main():
 
         # Outputs
         print(f"\nHelium mass required [kg]: {res['helium_mass']:.4f}")
+        print(f"\nHelium tank Volume (standard conditions): {res['helium_volume']:.4f}")
         print(f"Initial gage force [N]: {res['initial_gage_force']:.4f}")
         print(f"Achieved ascent rate [m/s]: {res['achieved_rate']:.4f}")
         if closest_step:
